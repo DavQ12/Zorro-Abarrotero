@@ -25,7 +25,7 @@ public class CarritoEntity {
 
     @NotNull
     @Column(name = "total")
-    private double total;
+    private Double total;
 
     @NotNull
     @Column(name = "fecha")
