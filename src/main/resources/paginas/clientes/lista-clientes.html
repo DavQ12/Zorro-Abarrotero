@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+    <header th:replace="~{plantillas/plantilla :: header}"></header>
+    
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: #ff6b00">Lista de Clientes</h1>
+            <a href="/clientes/nuevo" class="btn btn-warning">Nuevo Cliente</a>
+        </div>
+
+        <div class="alert alert-warning" th:if="${param.success}" th:with="message=${param.success[0]}">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${message}">Cliente creado con éxito</span>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <style>
+                    .btn-warning {
+                        background-color: #ff6b00 !important;
+                        border-color: #ff6b00 !important;
+                    }
+                    .btn-warning:hover {
+                        background-color: #e05e00 !important;
+                        border-color: #e05e00 !important;
+                    }
+                    .table-warning {
+                        background-color: #ff6b00 !important;
+                        color: white;
+                    }
+                    .text-warning {
+                        color: #ff6b00 !important;
+                    }
+                </style>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-warning" style="background-color: #ff6b00 !important; color: white;">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido Paterno</th>
+                                <th>Apellido Materno</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Número de Cuenta</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="cliente : ${clientes}">
+                                <td th:text="${cliente.nombre}">Nombre</td>
+                                <td th:text="${cliente.apellidoP}">Apellido Paterno</td>
+                                <td th:text="${cliente.apellidoM}">Apellido Materno</td>
+                                <td th:text="${cliente.correo}">Correo</td>
+                                <td th:text="${cliente.telefono}">Teléfono</td>
+                                <td th:text="${cliente.numCuenta}">Número de Cuenta</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este cliente?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

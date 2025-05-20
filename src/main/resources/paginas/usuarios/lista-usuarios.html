@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: #ff6b00">Listado de Usuarios</h1>
+        <a href="/usuarios/nuevo" class="btn btn-warning">
+            <i class="fas fa-user-plus"></i> Nuevo Usuario
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <style>
+                .btn-warning {
+                    background-color: #ff6b00 !important;
+                    border-color: #ff6b00 !important;
+                }
+                .btn-warning:hover {
+                    background-color: #e05e00 !important;
+                    border-color: #e05e00 !important;
+                }
+                .table-warning {
+                    background-color: #ff6b00 !important;
+                    color: white;
+                }
+                .text-warning {
+                    color: #ff6b00 !important;
+                }
+            </style>
+    
+    <div class="alert alert-info" th:if="${lista.isEmpty()}">
+        No hay usuarios registrados en el sistema.
+    </div>
+    
+    <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-warning" style="background-color: #ff6b00 !important; color: white;">
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+        <tbody>
+        <tr th:each="usuario: ${lista}">
+            <td th:text="${usuario.usuario}"></td>
+            <td th:text="${usuario.correo}"></td>
+            <td th:text="${usuario.rol.descripcion}"></td>
+            <td>
+                <a th:href="@{/usuarios/editar/{id} (id=${usuario.id})}"
+                   class="btn btn-success btn-sm">Modificar <i class="fas fa-pen-nib"
+                                                        aria-hidden="true"></i> </a>
+                <a th:href="@{/usuarios/eliminar/{id} (id=${usuario.id})}"
+                   class="btn btn-danger btn-sm">Eliminar <i class="fas fa-trash-alt"
+                                                      aria-hidden="true"></i> </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

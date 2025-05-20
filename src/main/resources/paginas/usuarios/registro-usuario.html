@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="login-container">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+        }
+        .btn-outline-primary {
+            color: #ff6b00;
+            border-color: #ff6b00;
+        }
+        .btn-outline-primary:hover {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .form-control {
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        
+        /* Estilos adicionales para el formulario */
+        .form-label {
+            color: #343a40;
+            font-weight: 500;
+        }
+        
+        .form-select {
+            padding: 12px;
+            border-color: #ddd;
+        }
+        
+        .form-select:focus {
+            border-color: #ff6b00;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        
+        .invalid-feedback {
+            color: #ff6b00;
+        }
+        
+        .form-select:invalid {
+            border-color: #ff6b00;
+        }
+        
+        .form-select:focus:invalid {
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        
+        .invalid-feedback {
+            display: block;
+            color: #ff6b00;
+        }
+    </style>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="login-title" th:text="${contenido}"></h1>
+            
+            <div th:if="${error != null}" class="alert alert-danger" role="alert">
+                <p th:text="${error}"></p>
+            </div>
+            
+            <form th:action="@{/usuarios/guardar}" method="post" class="needs-validation" novalidate>
+                <!-- Campo oculto para el ID cuando se está editando -->
+                <input type="hidden" name="id" th:value="${usuario.id}">
+                
+                <div class="mb-3 row">
+                    <label for="usuario" class="col-sm-3 col-form-label text-end">Usuario:</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="usuario" name="usuario" th:value="${usuario.usuario}" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un nombre de usuario válido.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3 row">
+                    <label for="correo" class="col-sm-3 col-form-label text-end">Correo:</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="correo" name="correo" th:value="${usuario.correo}" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un correo electrónico válido.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3 row">
+                    <label for="contrasena" class="col-sm-3 col-form-label text-end">Contraseña:</label>
+                    <div class="col-sm-9">
+                        <input type="password" class="form-control" id="contrasena" name="contrasena" th:value="${usuario.contrasena}" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese una contraseña válida.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3 row">
+                    <label for="rolId" class="col-sm-3 col-form-label text-end">Rol:</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="rolId" name="rolId" required>
+                            <option value="">Seleccione un rol</option>
+                            <option th:each="rolItem : ${roles}" th:value="${rolItem.id}" th:text="${rolItem.descripcion}"
+                                    th:selected="${usuario.rol != null && usuario.rol.id == rolItem.id}"></option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Por favor seleccione un rol.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Campos específicos para clientes -->
+                <div id="clienteFields" class="mb-3 row" style="display: none;">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            <div class="invalid-feedback">
+                                Por favor ingrese su nombre.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="apellidop" class="form-label">Apellido Paterno:</label>
+                            <input type="text" class="form-control" id="apellidop" name="apellidop" required>
+                            <div class="invalid-feedback">
+                                Por favor ingrese su apellido paterno.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="apellidom" class="form-label">Apellido Materno:</label>
+                            <input type="text" class="form-control" id="apellidom" name="apellidom">
+                            <div class="invalid-feedback">
+                                Por favor ingrese su apellido materno.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono:</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                            <div class="invalid-feedback">
+                                Por favor ingrese su teléfono.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="num_cuenta" class="form-label">Número de Cuenta:</label>
+                            <input type="text" class="form-control" id="num_cuenta" name="num_cuenta" required>
+                            <div class="invalid-feedback">
+                                Por favor ingrese su número de cuenta.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    // Mostrar/ocultar campos de cliente según el rol seleccionado
+                    document.getElementById('rolId').addEventListener('change', function() {
+                        const clienteFields = document.getElementById('clienteFields');
+                        clienteFields.style.display = this.value == '3' ? 'block' : 'none';
+                    });
+                </script>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a th:href="@{/usuarios/lista}" class="btn btn-outline-primary me-md-2">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>
