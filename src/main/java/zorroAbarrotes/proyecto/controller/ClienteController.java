@@ -7,98 +7,122 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import zorroAbarrotes.proyecto.model.entity.ClienteEntity;
 import zorroAbarrotes.proyecto.service.cliente.ClienteService;
 
 @Controller
-@RequestMapping("/clientes")
 public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
 
-    @GetMapping("/registro")
+    @GetMapping("/clientes/registro")
     public String mostrarFormularioRegistro(Model model) {
         model.addAttribute("cliente", new ClienteEntity());
         return "clientes/registro-cliente";
     }
 
-    @PostMapping("/registro")
+    @PostMapping("/clientes/registro")
     public String guardarClienteRegistro(ClienteEntity cliente, RedirectAttributes flash) {
         try {
             clienteService.save(cliente);
             flash.addFlashAttribute("success", "Cliente creado con éxito");
-            return "redirect:/login?registroExitoso";
+            return "redirect:/clientes/lista";
         } catch (Exception e) {
             flash.addFlashAttribute("errorMessage", "Error al crear el cliente: " + e.getMessage());
             return "redirect:/clientes/registro";
         }
     }
 
-    @GetMapping("/lista")
+    @GetMapping("/clientes/lista")
     public String listarClientes(Model model) {
         model.addAttribute("clientes", clienteService.findAll());
         return "clientes/lista-clientes";
     }
 
-    @GetMapping("/nuevo")
+    @GetMapping("/clientes/nuevo")
     public String mostrarFormularioNuevo(Model model) {
         model.addAttribute("cliente", new ClienteEntity());
+        model.addAttribute("editar", false);
         return "clientes/registro-cliente";
     }
 
-    @PostMapping("/nuevo")
+    @PostMapping("/clientes/guardar")
     public String guardarCliente(ClienteEntity cliente, RedirectAttributes flash) {
         try {
-            clienteService.save(cliente);
-            flash.addFlashAttribute("success", "Cliente creado con éxito");
+            // Validar campos obligatorios
+            if (cliente.getNombre() == null || cliente.getNombre().isEmpty() ||
+                cliente.getApellidoP() == null || cliente.getApellidoP().isEmpty() ||
+                cliente.getCorreo() == null || cliente.getCorreo().isEmpty()) {
+                flash.addFlashAttribute("errorMessage", "Todos los campos obligatorios deben estar completos");
+                return "redirect:/clientes/nuevo";
+            }
+
+            // Si es un cliente existente, buscarlo
+            ClienteEntity clienteExistente = clienteService.findById(cliente.getId());
+            if (clienteExistente != null) {
+                // Validar que el correo no esté registrado por otro cliente
+                if (!cliente.getCorreo().equals(clienteExistente.getCorreo()) && 
+                    clienteService.findByCorreo(cliente.getCorreo()).isPresent()) {
+                    flash.addFlashAttribute("errorMessage", "El correo electrónico ya está registrado en el sistema");
+                    return "redirect:/clientes/editar/" + cliente.getId();
+                }
+
+                // Validar longitud de la contraseña si se proporcionó una nueva
+                if (cliente.getContrasena() != null && !cliente.getContrasena().isEmpty() && cliente.getContrasena().length() < 6) {
+                    flash.addFlashAttribute("errorMessage", "La contraseña debe tener al menos 6 caracteres");
+                    return "redirect:/clientes/editar/" + cliente.getId();
+                }
+
+                // Actualizar los campos
+                clienteExistente.setNombre(cliente.getNombre());
+                clienteExistente.setApellidoP(cliente.getApellidoP());
+                clienteExistente.setApellidoM(cliente.getApellidoM());
+                clienteExistente.setCorreo(cliente.getCorreo());
+                clienteExistente.setTelefono(cliente.getTelefono());
+                clienteExistente.setNumCuenta(cliente.getNumCuenta());
+                
+                // Actualizar la contraseña solo si se proporcionó una nueva
+                if (cliente.getContrasena() != null && !cliente.getContrasena().isEmpty()) {
+                    clienteExistente.setContrasena(cliente.getContrasena());
+                }
+
+                clienteService.save(clienteExistente);
+                flash.addFlashAttribute("success", "Cliente actualizado con éxito");
+            } else {
+                // Es un nuevo cliente
+                clienteService.save(cliente);
+                flash.addFlashAttribute("success", "Cliente creado con éxito");
+            }
             return "redirect:/clientes/lista";
         } catch (Exception e) {
-            flash.addFlashAttribute("errorMessage", "Error al crear el cliente: " + e.getMessage());
+            System.out.println("ERROR: " + e.getMessage());
+            flash.addFlashAttribute("errorMessage", "Error al guardar el cliente: " + e.getMessage());
             return "redirect:/clientes/nuevo";
         }
     }
 
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+    @GetMapping("/clientes/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable("id") Long id, Model model) {
         ClienteEntity cliente = clienteService.findById(id);
-        if (cliente == null) {
-            return "redirect:/clientes/lista";
+        if (cliente != null) {
+            model.addAttribute("cliente", cliente);
+            model.addAttribute("editar", true);
+            return "clientes/registro-cliente";
         }
-        model.addAttribute("cliente", cliente);
-        return "clientes/registro-cliente";
+        return "redirect:/clientes/lista";
     }
 
-    @PostMapping("/editar/{id}")
-    public String actualizarCliente(@PathVariable Long id, ClienteEntity cliente, RedirectAttributes flash) {
-        try {
-            // Aseguramos que el ID del cliente coincida
-            cliente.setId(id);
-            clienteService.save(cliente);
-            flash.addFlashAttribute("success", "Cliente actualizado con éxito");
-            return "redirect:/clientes/lista";
-        } catch (Exception e) {
-            flash.addFlashAttribute("errorMessage", "Error al actualizar el cliente: " + e.getMessage());
-            return "redirect:/clientes/editar/" + id;
-        }
-    }
-
-    @GetMapping("/eliminar/{id}")
-    public String eliminarCliente(@PathVariable Long id, RedirectAttributes flash) {
-        // Verificar si el cliente existe antes de intentar eliminar
-        ClienteEntity cliente = clienteService.findById(id);
-        if (cliente == null) {
-            flash.addFlashAttribute("errorMessage", "El cliente no existe");
-            return "redirect:/clientes/lista";
-        }
-
+    @GetMapping("/clientes/eliminar/{id}")
+    public String eliminarCliente(@PathVariable("id") Long id, RedirectAttributes flash) {
         try {
             clienteService.deleteById(id);
             flash.addFlashAttribute("success", "Cliente eliminado con éxito");
             return "redirect:/clientes/lista";
         } catch (Exception e) {
-            flash.addFlashAttribute("errorMessage", "No se puede eliminar el cliente porque está siendo usado en otras transacciones");
+            flash.addFlashAttribute("errorMessage", "Error al eliminar el cliente: " + e.getMessage());
             return "redirect:/clientes/lista";
         }
     }

@@ -20,16 +20,58 @@
         }
         .login-logo {
             text-align: center;
-            margin-bottom: 30px;
         }
         .login-logo img {
             max-width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            padding: 10px;
         }
+        
         .login-title {
             text-align: center;
             margin-bottom: 30px;
             color: #343a40;
         }
+        :root {
+            --orange: #ff6b00;
+            --orange-light: #ff8533;
+            --orange-dark: #e05e00;
+            --border-radius: 10px;
+        }
+
+        .btn-warning {
+            background-color: var(--orange);
+            border-color: var(--orange);
+            color: white;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: var(--orange-light);
+            border-color: var(--orange-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning:active {
+            background-color: var(--orange-dark);
+            border-color: var(--orange-dark);
+            transform: translateY(0);
+        }
+
+        .btn-warning i {
+            margin-left: 0.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-warning:hover i {
+            transform: scale(1.1);
+        }
+
         .btn-primary {
             background-color: #ff6b00;
             border-color: #ff6b00;
@@ -57,7 +99,9 @@
 <body>
     <div class="container">
         <div class="login-container">
-
+            <div class="login-logo">
+                <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
+            </div>
             <h2 class="login-title">Iniciar Sesión</h2>
             
             <div th:if="${param.error}" class="alert alert-danger">
@@ -83,7 +127,10 @@
                     <input type="password" id="password" name="password" class="form-control" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                <button type="submit" class="btn btn-primary mb-3">Iniciar Sesión</button>
+                <a href="/" class="btn btn-warning">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
             </form>
             
             <div class="register-link">

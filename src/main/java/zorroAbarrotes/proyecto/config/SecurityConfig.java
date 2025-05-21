@@ -23,7 +23,7 @@ public class SecurityConfig {
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
-        // ADVERTENCIA: Esto no es seguro para producción, pero permite usar contraseñas sin encriptar
+        //Sin encriptar
         return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
@@ -39,6 +39,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> 
                 authorize
                     .requestMatchers("/", "/login", "/registro", "/test-auth", "/usuarios/**", "/css/**", "/js/**", "/images/**", "/iconos/**", "/bootstrap/**", "/clientes/registro").permitAll()
+                    .requestMatchers("/static/**", "/image/**").permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             )

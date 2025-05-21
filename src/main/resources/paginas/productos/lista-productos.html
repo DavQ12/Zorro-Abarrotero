@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos - Zorro Abarrotero</title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/iconos/bootstrap-icons.css">
+    <header th:replace="~{plantillas/plantilla :: header}"></header>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .productos-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        :root {
+            --orange: #ff6b00;
+            --orange-light: #ff8533;
+            --orange-dark: #e05e00;
+            --red: #dc3545;
+            --red-light: #f5c6cb;
+            --red-dark: #c82333;
+            --border-radius: 10px;
+        }
+
+        .btn-warning {
+            background-color: var(--orange) !important;
+            border-color: var(--orange) !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: var(--orange-light) !important;
+            border-color: var(--orange-light) !important;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning:active {
+            background-color: var(--orange-dark) !important;
+            border-color: var(--orange-dark) !important;
+            transform: translateY(0);
+        }
+
+        .btn-red-danger {
+            background-color: var(--red);
+            color: white;
+            border: 1px solid var(--red);
+            transition: all 0.3s ease;
+        }
+
+        .btn-red-danger:hover {
+            background-color: var(--red-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-red-danger:active {
+            background-color: var(--red-dark);
+            transform: translateY(0);
+        }
+
+        .btn-red-danger i,
+        .btn-warning i {
+            margin-left: 0.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-red-danger:hover i,
+        .btn-warning:hover i {
+            transform: scale(1.1);
+        }
+
+        .table {
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .table th {
+            background-color: white;
+            color: var(--orange);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+        }
+
+        .acciones button {
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="productos-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 style="color: var(--orange)">Lista de Productos</h2>
+                <a th:href="@{/productos/nuevo}" class="btn btn-warning">
+                    <i class="bi bi-plus-circle"></i> Nuevo Producto
+                </a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success">
+                <span th:text="${success}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Marca</th>
+                        <th>Precio</th>
+                        <th>Stock Mínimo</th>
+                        <th>Stock Actual</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="producto : ${productos}">
+                        <td th:text="${producto.id}"></td>
+                        <td>
+                            <img th:if="${producto.imagen != null && producto.imagen != ''}" 
+                                 th:src="@{/image/productos/{nombreArchivo}(nombreArchivo=${producto.imagen})}" 
+                                 alt="Imagen de producto" 
+                                 class="img-thumbnail" 
+                                 style="max-width: 50px; height: auto;">
+                            <div th:if="${producto.imagen == null || producto.imagen == ''}" 
+                                 class="text-muted small">
+                                No hay imagen disponible
+                            </div>
+                            <div th:if="${producto.imagen == null || producto.imagen == ''}"
+                                 class="text-danger small">
+                                No hay imagen disponible
+                            </div>
+                        </td>
+                        <td th:text="${producto.nombre}"></td>
+                        <td th:text="${producto.marca}"></td>
+                        <td th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}"></td>
+                        <td th:text="${producto.stockMinimo}"></td>
+                        <td th:text="${producto.stockActual}"></td>
+                        <td th:text="${producto.categoria.descripcion}"></td>
+                        <td class="acciones">
+                            <a th:href="@{/productos/editar/{id}(id=${producto.id})}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil" aria-hidden="true"></i> Modificar
+                            </a>
+                            <form th:action="@{/productos/eliminar/{id}(id=${producto.id})}" method="post" style="display: inline;">
+                                <input type="hidden" name="_method" value="delete" />
+                                <button type="submit" class="btn btn-sm btn-red-danger" onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                    <i class="bi bi-trash" aria-hidden="true"></i> Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

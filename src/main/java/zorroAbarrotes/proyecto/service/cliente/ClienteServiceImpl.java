@@ -14,7 +14,11 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteEntity save(ClienteEntity actor) {
-        return clienteRepository.save(actor);
+        ClienteEntity saved = clienteRepository.save(actor);
+        if (saved == null) {
+            throw new RuntimeException("Error al guardar el cliente");
+        }
+        return saved;
     }
 
     @Override
@@ -31,5 +35,10 @@ public class ClienteServiceImpl implements ClienteService {
     public ClienteEntity findById(Long id) {
         Optional<ClienteEntity> actor = clienteRepository.findById(id);
         return actor.orElse(null);
+    }
+
+    @Override
+    public Optional<ClienteEntity> findByCorreo(String correo) {
+        return clienteRepository.findByCorreo(correo);
     }
 }

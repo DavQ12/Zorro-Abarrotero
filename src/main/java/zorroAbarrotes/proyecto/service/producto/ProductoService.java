@@ -9,4 +9,5 @@ public interface ProductoService {
     List<ProductoEntity> findAll();
     void deleteById(Long id);
     ProductoEntity findById(Long id);
+    List<ProductoEntity> findByImagenNotNull();
 }

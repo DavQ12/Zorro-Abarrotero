@@ -33,4 +33,9 @@ public class ProductoServiceImpl implements ProductoService {
         Optional<ProductoEntity> actor = productoRepository.findById(id);
         return actor.orElse(null);
     }
+
+    @Override
+    public List<ProductoEntity> findByImagenNotNull() {
+        return productoRepository.findByImagenNotNullAndImagenNotEmpty();
+    }
 }

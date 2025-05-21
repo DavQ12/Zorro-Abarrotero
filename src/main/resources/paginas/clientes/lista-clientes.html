@@ -9,7 +9,9 @@
     <main class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 style="color: #ff6b00">Lista de Clientes</h1>
-            <a href="/clientes/nuevo" class="btn btn-warning">Nuevo Cliente</a>
+            <a href="/clientes/nuevo" class="btn btn-warning">
+                <i class="fas fa-user-plus"></i> Nuevo Cliente
+            </a>
         </div>
 
         <div class="alert alert-warning" th:if="${param.success}" th:with="message=${param.success[0]}">
@@ -20,25 +22,102 @@
         <div class="card">
             <div class="card-body">
                 <style>
+                    :root {
+                        --orange: #ff6b00;
+                        --orange-light: #ff8533;
+                        --orange-dark: #e05e00;
+                        --red: #dc3545;
+                        --red-light: #f5c6cb;
+                        --red-dark: #c82333;
+                        --border-radius: 10px;
+                    }
+
                     .btn-warning {
-                        background-color: #ff6b00 !important;
-                        border-color: #ff6b00 !important;
+                        background-color: var(--orange) !important;
+                        border-color: var(--orange) !important;
+                        color: white !important;
+                        transition: all 0.3s ease;
                     }
+
                     .btn-warning:hover {
-                        background-color: #e05e00 !important;
-                        border-color: #e05e00 !important;
+                        background-color: var(--orange-light) !important;
+                        border-color: var(--orange-light) !important;
+                        transform: translateY(-2px);
                     }
+
+                    .btn-warning:active {
+                        background-color: var(--orange-dark) !important;
+                        border-color: var(--orange-dark) !important;
+                        transform: translateY(0);
+                    }
+
                     .table-warning {
-                        background-color: #ff6b00 !important;
-                        color: white;
+                        background-color: rgba(255, 107, 0, 0.15);
+                        color: var(--orange);
                     }
+
+                    .table th {
+                        background-color: white;
+                        color: var(--orange);
+                        border-radius: var(--border-radius) var(--border-radius) 0 0;
+                    }
+
                     .text-warning {
-                        color: #ff6b00 !important;
+                        color: var(--orange) !important;
+                    }
+
+                    .btn-orange {
+                        background-color: var(--orange);
+                        border-color: var(--orange);
+                        color: white;
+                        transition: all 0.3s ease;
+                        border-radius: var(--border-radius);
+                    }
+
+                    .btn-orange:hover {
+                        background-color: var(--orange-light);
+                        border-color: var(--orange-light);
+                        transform: translateY(-2px);
+                    }
+
+                    .btn-orange:active {
+                        background-color: var(--orange-dark);
+                        border-color: var(--orange-dark);
+                        transform: translateY(0);
+                    }
+
+                    .btn-red-danger {
+                        background-color: var(--red);
+                        color: white;
+                        border: 1px solid var(--red);
+                        transition: all 0.3s ease;
+                        border-radius: var(--border-radius);
+                    }
+
+                    .btn-red-danger:hover {
+                        background-color: var(--red-light);
+                        transform: translateY(-2px);
+                    }
+
+                    .btn-red-danger:active {
+                        background-color: var(--red-dark);
+                        transform: translateY(0);
+                    }
+
+                    .btn-orange i,
+                    .btn-orange-danger i {
+                        margin-left: 0.25rem;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .btn-orange:hover i,
+                    .btn-orange-danger:hover i {
+                        transform: scale(1.1);
                     }
                 </style>
                 <div class="table-responsive">
                     <table class="table table-hover">
-                        <thead class="table-warning" style="background-color: #ff6b00 !important; color: white;">
+                        <thead class="table-warning">
                             <tr>
                                 <th>Nombre</th>
                                 <th>Apellido Paterno</th>
@@ -59,11 +138,11 @@
                                 <td th:text="${cliente.numCuenta}">Número de Cuenta</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-warning">
-                                            <i class="fas fa-edit"></i>
+                                        <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-orange">
+                                            <i class="fas fa-pen-nib" aria-hidden="true"></i> Modificar
                                         </a>
-                                        <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este cliente?')">
-                                            <i class="fas fa-trash"></i>
+                                        <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-red-danger" onclick="return confirm('¿Estás seguro de eliminar este cliente?')">
+                                            <i class="fas fa-trash-alt" aria-hidden="true"></i> Eliminar
                                         </a>
                                     </div>
                                 </td>

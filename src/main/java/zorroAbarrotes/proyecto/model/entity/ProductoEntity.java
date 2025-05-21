@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Entity(name = "producto")
+@Entity
+@Table(name = "producto")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

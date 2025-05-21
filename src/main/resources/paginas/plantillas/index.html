@@ -7,19 +7,22 @@
     <header th:replace="~{plantillas/plantilla :: header}"></header>
     
     <main class="container">
-        <!-- Sección de banner principal -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card bg-warning text-white border-0 rounded-0" style="height: 300px;">
-                    <div class="card-body d-flex align-items-center justify-content-center">
-                        <div class="text-center">
-                            <h1 class="display-4 fw-bold mb-3">¡Bienvenidos a Zorro Abarrotero!</h1>
-                            <p class="lead mb-4">¡Los mejores productos lácteos y jugos frescos a los mejores precios!</p>
-                            <div sec:authorize="!isAuthenticated()" class="d-flex justify-content-center gap-3">
-                                <a href="/login" class="btn btn-light btn-lg px-4">Iniciar Sesión</a>
-                                <a href="/registro" class="btn btn-outline-light btn-lg px-4">Registrarse</a>
-                            </div>
-                        </div>
+        <!-- Sección de banner principal con logo -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <div class="position-relative">
+                    <!-- Logo del zorro -->
+                    <div class="mb-4">
+                        <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero" class="img-fluid" style="max-width: 200px;">
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3 text-warning">¡Bienvenidos a Zorro Abarrotero!</h1>
+                    <p class="lead mb-4 text-muted">¡Los mejores productos lácteos y jugos frescos a los mejores precios!</p>
+                    <div class="mb-4">
+                        <i class="fas fa-store-alt fa-3x text-warning mb-3"></i>
+                    </div>
+                    <div sec:authorize="!isAuthenticated()" class="d-flex justify-content-center gap-3">
+                        <a href="/login" class="btn btn-light btn-lg px-4">Iniciar Sesión</a>
+                        <a href="/clientes/registro" class="btn btn-outline-light btn-lg px-4">Registrarse</a>
                     </div>
                 </div>
             </div>
@@ -28,49 +31,55 @@
         <!-- Sección de productos destacados -->
         <div class="row mb-5">
             <div class="col-12 text-center mb-4">
-                <h2 class="text-warning fw-bold">Productos Destacados</h2>
-                <p class="text-muted">¡Descubre nuestra selección de productos frescos y de alta calidad!</p>
+                <h2 class="text-warning fw-bold">Nuestros Productos</h2>
+                <p class="text-muted">¡Explora nuestra variedad de productos frescos y de alta calidad!</p>
             </div>
         </div>
 
-        <!-- Sección de características -->
+        <!-- Sección de productos -->
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card bg-white border-warning shadow-sm h-100">
                     <div class="card-body text-center">
-                        <div class="icon-container bg-warning rounded-circle mb-3">
-                            <i class="fas fa-milk fa-2x text-white"></i>
+                        <div class="icon-container bg-warning rounded-circle mb-4">
+                            <i class="fas fa-wine-bottle fa-3x text-white"></i>
                         </div>
-                        <h3 class="card-title text-warning">Lácteos Frescos</h3>
-                        <p class="card-text text-muted">
-                            Leche, yogurt, queso y más productos lácteos de la mejor calidad.
-                        </p>
+                        <h5 class="card-title text-warning">Leche Fresca</h5>
+                        <p class="card-text text-muted">Leche de la mejor calidad, 100% natural.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-warning fw-bold">$25.00</span>
+                            <button class="btn btn-warning btn-sm">Agregar</button>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card bg-white border-warning shadow-sm h-100">
                     <div class="card-body text-center">
-                        <div class="icon-container bg-warning rounded-circle mb-3">
-                            <i class="fas fa-glass-whiskey fa-2x text-white"></i>
+                        <div class="icon-container bg-warning rounded-circle mb-4">
+                            <i class="fas fa-ice-cream fa-3x text-white"></i>
                         </div>
-                        <h3 class="card-title text-warning">Jugos Naturales</h3>
-                        <p class="card-text text-muted">
-                            Jugos frescos y naturales, sin conservantes.
-                        </p>
+                        <h5 class="card-title text-warning">Yogurt Natural</h5>
+                        <p class="card-text text-muted">Yogurt con probióticos, sin conservantes.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-warning fw-bold">$30.00</span>
+                            <button class="btn btn-warning btn-sm">Agregar</button>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card bg-white border-warning shadow-sm h-100">
                     <div class="card-body text-center">
-                        <div class="icon-container bg-warning rounded-circle mb-3">
-                            <i class="fas fa-shopping-cart fa-2x text-white"></i>
+                        <div class="icon-container bg-warning rounded-circle mb-4">
+                            <i class="fas fa-glass-whiskey fa-3x text-white"></i>
                         </div>
-                        <h3 class="card-title text-warning">Compra Fácil</h3>
-                        <p class="card-text text-muted">
-                            Sistema de gestión eficiente para tus compras.
-                        </p>
+                        <h5 class="card-title text-warning">Jugo de Naranja</h5>
+                        <p class="card-text text-muted">Jugo 100% natural, sin azúcar añadido.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-warning fw-bold">$20.00</span>
+                            <button class="btn btn-warning btn-sm">Agregar</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -79,10 +88,15 @@
         <!-- Sección de promoción -->
         <div class="row mt-5">
             <div class="col-12">
-                <div class="alert alert-warning text-center" role="alert">
-                    <h3 class="alert-heading mb-3">¡Promoción Especial!</h3>
-                    <p class="mb-3">¡10% de descuento en todos los productos lácteos!</p>
-                    <p class="mb-0">¡No pierdas esta oportunidad!</p>
+                <div class="alert alert-warning text-center rounded-0" role="alert">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-tags fa-3x me-3"></i>
+                        <div>
+                            <h3 class="alert-heading mb-2">¡Promoción Especial!</h3>
+                            <p class="mb-2">¡10% de descuento en todos los productos lácteos!</p>
+                            <p class="mb-0">¡No pierdas esta oportunidad!</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,10 +122,17 @@
 
         .card {
             transition: transform 0.3s ease;
+            border: none !important;
         }
 
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
         }
 
         .btn-light {
@@ -119,6 +140,7 @@
             color: var(--primary-color);
             border-color: var(--primary-color);
             font-weight: bold;
+            padding: 8px 20px;
         }
 
         .btn-light:hover {
@@ -131,6 +153,7 @@
             color: var(--primary-color);
             border-color: var(--primary-color);
             font-weight: bold;
+            padding: 8px 20px;
         }
 
         .btn-outline-light:hover {
@@ -141,6 +164,7 @@
         .alert-warning {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
+            padding: 2rem;
         }
 
         .alert-warning .alert-heading {
@@ -162,6 +186,7 @@
         .border-warning {
             border-color: var(--primary-color) !important;
         }
+
     </style>
 </body>
 </html>
