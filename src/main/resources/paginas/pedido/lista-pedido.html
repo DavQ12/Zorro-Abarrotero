@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{plantillas/plantilla :: head}"></head>
 <body>
 <header th:replace="~{plantillas/plantilla :: header}"></header>
@@ -57,7 +57,6 @@
                     border-radius: var(--border-radius);
                 }
 
-                /* Custom orange buttons */
                 .btn-orange {
                     background-color: var(--orange);
                     border-color: var(--orange);
@@ -75,6 +74,18 @@
                     background-color: var(--orange-dark);
                     border-color: var(--orange-dark);
                     transform: translateY(0);
+                }
+
+                .btn-success {
+                    background-color: #28a745;
+                    border-color: #28a745;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-success:hover {
+                    background-color: #218838;
+                    border-color: #1e7e34;
+                    transform: translateY(-2px);
                 }
 
                 .btn-red-danger {
@@ -95,12 +106,14 @@
                 }
 
                 .btn-orange i,
+                .btn-success i,
                 .btn-red-danger i {
                     margin-left: 0.25rem;
                     transition: transform 0.3s ease;
                 }
 
                 .btn-orange:hover i,
+                .btn-success:hover i,
                 .btn-red-danger:hover i {
                     transform: scale(1.1);
                 }
@@ -110,79 +123,81 @@
                     height: auto;
                     border-radius: var(--border-radius);
                 }
-
-                .form-control {
-                    border-radius: var(--border-radius);
-                }
             </style>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 style="color: #ff6b00" th:text="${contenido}"></h1>
+                <h1 style="color: #ff6b00">Lista de Pedidos</h1>
+                <a th:href="@{/proveedor/lista-pedidos}" class="btn btn-warning">
+                    <i class="bi bi-plus-circle"></i> Nuevo Pedido
+                </a>
             </div>
 
             <div th:if="${success}" class="alert alert-success">
                 <span th:text="${success}"></span>
             </div>
-
             <div th:if="${errorMessage}" class="alert alert-danger">
                 <span th:text="${errorMessage}"></span>
             </div>
 
-            <div class="table-responsive">
-                <table th:if="${!datos.isEmpty()}" class="table table-hover">
+            <div class="alert alert-info" th:if="${pedidos.isEmpty()}">
+                No hay pedidos registrados en el sistema.
+            </div>
+
+            <div class="table-responsive" th:if="${!pedidos.isEmpty()}">
+                <table class="table table-hover">
                     <thead class="table-warning">
                     <tr>
-                        <th>Nombre</th>
-                        <th>Empresa</th>
-                        <th>Correo</th>
-                        <th>Teléfono</th>
-                        <th>Producto</th>
+                        <th>ID</th>
                         <th>Imagen</th>
-                        <th>Categoría</th>
-                        <th>Costo unitario</th>
+                        <th>Producto</th>
+                        <th>Marca</th>
+                        <th>Categoria</th>
                         <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Proveedor</th>
+                        <th>Empresa</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="dato : ${datos}">
-                        <td th:text="${dato.proveedor.nombre}"></td>
-                        <td th:text="${dato.proveedor.empresa}"></td>
-                        <td th:text="${dato.proveedor.correo}"></td>
-                        <td th:text="${dato.proveedor.telefono}"></td>
-                        <td th:text="${dato.producto.nombre}"></td>
+                    <tr th:each="pedido : ${pedidos}">
+                        <td th:text="${pedido.id}"></td>
                         <td>
-                            <img th:if="${dato.producto.imagen != null && dato.producto.imagen != ''}"
-                                 th:src="@{/image/productos/{img}(img=${dato.producto.imagen})}"
-                                 alt="Imagen del producto"
+                            <img th:if="${pedido.producto.imagen != null && pedido.producto.imagen != ''}"
+                                 th:src="@{/image/productos/{nombreArchivo}(nombreArchivo=${pedido.producto.imagen})}"
+                                 alt="Imagen de producto"
                                  class="img-thumbnail">
-                            <div th:if="${dato.producto.imagen == null || dato.producto.imagen == ''}"
+                            <div th:if="${pedido.producto.imagen == null || pedido.producto.imagen == ''}"
                                  class="text-muted small">
                                 Sin imagen
                             </div>
                         </td>
-                        <td th:text="${dato.producto.categoria.descripcion}"></td>
-                        <td th:text="${dato.costoUnitario}"></td>
+                        <td th:text="${pedido.producto.nombre}"></td>
+                        <td th:text="${pedido.producto.marca}"></td>
+                        <td th:text="${pedido.producto.categoria.descripcion}"></td>
+                        <td th:text="${pedido.cantidadProducto}"></td>
+                        <td th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}"></td>
+                        <td th:text="${pedido.proveedor.nombre}"></td>
+                        <td th:text="${pedido.proveedor.empresa}"></td>
+                        <td th:text="${pedido.usuario.username}"></td>
+                        <td th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></td>
                         <td>
-                            <form th:action="@{/proveedor/hacer-pedido}" method="post" class="d-flex align-items-center">
-                                <input type="hidden" name="productoId" th:value="${dato.producto.id}" />
-                                <input type="hidden" name="proveedorId" th:value="${dato.proveedor.id}" />
-                                <input type="number" name="cantidad" min="1" required
-                                       class="form-control form-control-sm" style="max-width: 80px;" placeholder="1">
-                        </td>
-                        <td>
-                            <button type="submit" class="btn btn-orange btn-sm">
-                                Pedir <i class="fas fa-shopping-cart"></i>
-                            </button>
-                            </form>
+                            <div class="d-flex gap-2">
+                                <form th:action="@{/pedido/eliminar/{id}(id=${pedido.id})}"
+                                      method="post" class="d-inline">
+                                    <input type="hidden" name="_method" value="delete" />
+                                    <button type="submit" class="btn btn-red-danger btn-sm"
+                                            onclick="return confirm('¿Está seguro de eliminar este pedido?')">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-
-                <div class="alert alert-info" th:if="${datos.isEmpty()}">
-                    No hay productos disponibles para pedidos.
-                </div>
             </div>
         </div>
     </div>

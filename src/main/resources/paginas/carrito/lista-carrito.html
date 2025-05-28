@@ -139,6 +139,7 @@
                                 <th>ID</th>
                                 <th>Total</th>
                                 <th>Fecha</th>
+                                <th>Detalles</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -150,6 +151,15 @@
                                           th:text="${c.total != null ? '$' + #numbers.formatDecimal(c.total, 1, 2) : '$0.00'}"></span>
                                 </td>
                                 <td th:text="${#temporals.format(c.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <div class="d-flex justify-content-between align-items-center" style="gap: 10px;">
+                                        <button class="btn btn-sm btn-primary"
+                                                th:onclick="|mostrarDetallesCarrito(${c.id})|">
+                                            <i class="fas fa-eye"></i> Ver Detalles
+                                        </button>
+
+                                    </div>
+                                </td>
                                 <td>
                                     <div class="btn-group" style="gap: 5px;">
                                         <a th:href="@{/carrito/editar/{id}(id=${c.id})}" class="btn btn-sm btn-orange" style="border-radius: var(--border-radius) !important;">
@@ -168,8 +178,109 @@
                 </div>
             </div>
         </div>
+
+<!--        Mostrar los productos del carrito-->
+        <div class="modal fade" id="modalDetallesCarrito" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalles Carrito</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Información del Carrito</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>ID del Carrito:</strong> <span id="idCarrito"></span></p>
+                                    <p><strong>Fecha de Creación:</strong> <span id="fechaCarrito"></span></p>
+                                    <p><strong>Total del Carrito:</strong> <span id="totalCarrito" class="venta-total"></span></p>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Productos del Carrito</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Imagen</th>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio Unitario</th>
+                                                <th>Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="productosTableBody">
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th colspan="3" class="text-end">Total de Productos:</th>
+                                                <th id="productosTotal" class="venta-total"></th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
-    
+
+    <script th:inline="javascript">
+        let ventaSeleccionada = null;
+        function mostrarDetallesCarrito(carritoId) {
+            fetch(`/carrito/detalles/${carritoId}`)
+                .then(response => response.json())
+                .then(data =>{
+                    //mostrar info del carrito
+                    document.getElementById('idCarrito').textContent = data.idCarrito;
+                    document.getElementById('fechaCarrito').textContent = data.fecha;
+                    document.getElementById('totalCarrito').textContent = `$${data.total.toFixed(2)}`;
+
+                    // Limpiar y llenar la tabla de productos
+                    const productosTableBody = document.getElementById('productosTableBody');
+                    productosTableBody.innerHTML = '';
+
+                    let productosTotal = 0;
+                    data.productos.forEach(producto => {
+                        productosTotal += producto.total;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><img src="${producto.imagen}" alt="Imagen" width="50"></td>
+                            <td>${producto.nombre}</td>
+                            <td>${producto.cantidad}</td>
+                            <td>$${producto.precioUnitario.toFixed(2)}</td>
+                            <td class="venta-total">$${producto.total.toFixed(2)}</td>
+                        `;
+                        productosTableBody.appendChild(row);
+                    });
+                    document.getElementById('productosTotal').textContent = `$${productosTotal.toFixed(2)}`;
+
+                    // Mostrar modal con la información
+                    new bootstrap.Modal(document.getElementById('modalDetallesCarrito')).show();
+                })
+                .catch(error => {
+                    console.error('Error al cargar detalles del carrito:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudieron cargar los detalles del carrito'
+                    });
+                });
+
+        }
+
+
+    </script>
 
     
   

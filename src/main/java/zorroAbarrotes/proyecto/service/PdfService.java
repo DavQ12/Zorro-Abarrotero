@@ -35,6 +35,8 @@ public class PdfService {
     private static final float DEFAULT_PADDING = 8f;
     private static final float HEADER_PADDING = 10f;
 
+    private final String RUTA_IMAGENES = "/imagenes/";
+
     public ByteArrayOutputStream generarPdfVenta(VentaEntity venta) throws DocumentException {
         if (venta.getCarrito() == null ||
                 venta.getCarrito().getProductosCarrito() == null ||
@@ -254,7 +256,7 @@ public class PdfService {
             
             try {
                 if (productoCarrito.getProducto().getImagen() != null && !productoCarrito.getProducto().getImagen().isEmpty()) {
-                    Image productImage = Image.getInstance("src/main/resources/static/image/productos/" + productoCarrito.getProducto().getImagen());
+                    Image productImage = Image.getInstance(RUTA_IMAGENES + productoCarrito.getProducto().getImagen());
                     // IMÁGENES 
                     productImage.scaleToFit(70, 70);
                     productImage.setAlignment(Element.ALIGN_CENTER);

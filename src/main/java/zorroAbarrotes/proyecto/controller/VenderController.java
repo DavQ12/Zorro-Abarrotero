@@ -59,6 +59,8 @@ public class VenderController {
     @Autowired
     private ClienteService clienteService;
 
+    private final String RUTA_IMAGENES = "/imagenes/";
+
     @GetMapping({"/", "/vender"})
     public String mostrarVistaVenta(Model model) {
         try {
@@ -131,6 +133,7 @@ public class VenderController {
                         producto.put("cantidad", pc.getCantidad());
                         producto.put("precioUnitario", pc.getProducto().getPrecio());
                         producto.put("total", pc.getTotal());
+                        producto.put("imagen", (RUTA_IMAGENES+pc.getProducto().getImagen()));
                         return producto;
                     })
                     .collect(Collectors.toList());
