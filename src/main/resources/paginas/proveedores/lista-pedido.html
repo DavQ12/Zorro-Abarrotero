@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <style>
+                :root {
+                    --orange: #ff4d00;
+                    --orange-light: #ff8533;
+                    --orange-dark: #e05e00;
+                    --red: #dc3545;
+                    --red-light: #f5c6cb;
+                    --red-dark: #c82333;
+                    --border-radius: 10px;
+                }
+
+                .btn-warning {
+                    background-color: var(--orange) !important;
+                    border-color: var(--orange) !important;
+                    color: white !important;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-warning:hover {
+                    background-color: var(--orange-light) !important;
+                    border-color: var(--orange-light) !important;
+                    transform: translateY(-2px);
+                }
+
+                .btn-warning:active {
+                    background-color: var(--orange-dark) !important;
+                    border-color: var(--orange-dark) !important;
+                    transform: translateY(0);
+                }
+
+                .table {
+                    margin-top: 2rem;
+                    border-radius: var(--border-radius);
+                }
+
+                .table th {
+                    background-color: white;
+                    color: var(--orange);
+                    border-radius: var(--border-radius) var(--border-radius) 0 0;
+                }
+
+                .table td {
+                    vertical-align: middle;
+                }
+
+                .btn-sm {
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.875rem;
+                    border-radius: var(--border-radius);
+                }
+
+                /* Custom orange buttons */
+                .btn-orange {
+                    background-color: var(--orange);
+                    border-color: var(--orange);
+                    color: white;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-orange:hover {
+                    background-color: var(--orange-light);
+                    border-color: var(--orange-light);
+                    transform: translateY(-2px);
+                }
+
+                .btn-orange:active {
+                    background-color: var(--orange-dark);
+                    border-color: var(--orange-dark);
+                    transform: translateY(0);
+                }
+
+                .btn-red-danger {
+                    background-color: var(--red);
+                    color: white;
+                    border: 1px solid var(--red);
+                    transition: all 0.3s ease;
+                }
+
+                .btn-red-danger:hover {
+                    background-color: var(--red-light);
+                    transform: translateY(-2px);
+                }
+
+                .btn-red-danger:active {
+                    background-color: var(--red-dark);
+                    transform: translateY(0);
+                }
+
+                .btn-orange i,
+                .btn-red-danger i {
+                    margin-left: 0.25rem;
+                    transition: transform 0.3s ease;
+                }
+
+                .btn-orange:hover i,
+                .btn-red-danger:hover i {
+                    transform: scale(1.1);
+                }
+
+                .img-thumbnail {
+                    max-width: 50px;
+                    height: auto;
+                    border-radius: var(--border-radius);
+                }
+
+                .form-control {
+                    border-radius: var(--border-radius);
+                }
+            </style>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 style="color: #ff6b00" th:text="${contenido}"></h1>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success">
+                <span th:text="${success}"></span>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <div class="table-responsive">
+                <table th:if="${!datos.isEmpty()}" class="table table-hover">
+                    <thead class="table-warning">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Empresa</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Producto</th>
+                        <th>Imagen</th>
+                        <th>Categoría</th>
+                        <th>Cantidad</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="dato : ${datos}">
+                        <td th:text="${dato.proveedor.nombre}"></td>
+                        <td th:text="${dato.proveedor.empresa}"></td>
+                        <td th:text="${dato.proveedor.correo}"></td>
+                        <td th:text="${dato.proveedor.telefono}"></td>
+                        <td th:text="${dato.producto.nombre}"></td>
+                        <td>
+                            <img th:if="${dato.producto.imagen != null && dato.producto.imagen != ''}"
+                                 th:src="@{/image/productos/{img}(img=${dato.producto.imagen})}"
+                                 alt="Imagen del producto"
+                                 class="img-thumbnail">
+                            <div th:if="${dato.producto.imagen == null || dato.producto.imagen == ''}"
+                                 class="text-muted small">
+                                Sin imagen
+                            </div>
+                        </td>
+                        <td th:text="${dato.producto.categoria.descripcion}"></td>
+                        <td>
+                            <form th:action="@{/proveedor/hacer-pedido}" method="post" class="d-flex align-items-center">
+                                <input type="hidden" name="productoId" th:value="${dato.producto.id}" />
+                                <input type="hidden" name="proveedorId" th:value="${dato.proveedor.id}" />
+                                <input type="number" name="cantidad" min="1" required
+                                       class="form-control form-control-sm" style="max-width: 80px;" placeholder="1">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-orange btn-sm">
+                                Pedir <i class="fas fa-shopping-cart"></i>
+                            </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="alert alert-info" th:if="${datos.isEmpty()}">
+                    No hay productos disponibles para pedidos.
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

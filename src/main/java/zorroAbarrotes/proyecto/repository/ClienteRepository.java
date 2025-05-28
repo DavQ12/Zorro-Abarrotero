@@ -8,10 +8,10 @@ import zorroAbarrotes.proyecto.model.entity.ClienteEntity;
 import java.util.Optional;
 
 public interface ClienteRepository extends JpaRepository<ClienteEntity, Long> {
-    Optional<ClienteEntity> findByNombre(String nombre);
-    
+    @Query("SELECT c FROM ClienteEntity c WHERE c.correo = ?1 OR c.telefono = ?1 OR c.numCuenta = ?1")
+    Optional<ClienteEntity> findByIdentificador(String identificador);
+
     Optional<ClienteEntity> findByCorreo(String correo);
-    
-    @Query("SELECT c FROM ClienteEntity c WHERE c.nombre = :login OR c.correo = :login")
-    Optional<ClienteEntity> findByNombreOrCorreo(@Param("login") String login);
+    Optional<ClienteEntity> findByTelefono(String telefono);
+
 }

@@ -8,7 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "pago")
+@Entity
+@Table(name = "pago")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

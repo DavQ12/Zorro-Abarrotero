@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import zorroAbarrotes.proyecto.model.entity.ClienteEntity;
+import zorroAbarrotes.proyecto.model.entity.ProductoEntity;
 import zorroAbarrotes.proyecto.model.entity.RolEntity;
 import zorroAbarrotes.proyecto.model.entity.UsuarioEntity;
 import zorroAbarrotes.proyecto.repository.UsuarioRepository;
+import zorroAbarrotes.proyecto.service.producto.ProductoService;
 import zorroAbarrotes.proyecto.service.rol.RolService;
 import zorroAbarrotes.proyecto.service.usuario.UsuarioService;
 
@@ -32,17 +35,31 @@ public class AuthController {
     
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("contenido", "Bienvenido a Zorro Abarrotero");
-        return "plantillas/index";
-    }
+    @Autowired
+    private ProductoService productoService;
 
     @GetMapping("/login")
+    public String home(Model model) {
+        ClienteEntity cliente = new ClienteEntity();
+        model.addAttribute("cliente", cliente);
+        model.addAttribute("contenido", "Bienvenido Caja a Zorro Abarrotero");
+        return "clientes/login-clientes";
+    }
+
+    @GetMapping("/admin")
+    public String homeAdmin(Model model) {
+        List<ProductoEntity> productos = productoService.findAll();
+        model.addAttribute("productos", productos);
+        model.addAttribute("contenido", "Bienvenido Administrador a Zorro Abarrotero");
+        return "login/admin";
+    }
+
+
+    @GetMapping("/")
     public String loginForm() {
         return "login/login";
     }
+
 
     @GetMapping("/registro")
     public String registroForm(Model model) {
@@ -53,9 +70,10 @@ public class AuthController {
 
     @PostMapping("/registro")
     public String registro(@ModelAttribute("usuario") UsuarioEntity usuario, RedirectAttributes redirectAttributes) {
+        System.out.println("aqui entra??");
         try {
             // Verificar si el usuario ya existe
-            Optional<UsuarioEntity> existingUser = usuarioRepository.findByUsuario(usuario.getUsuario());
+            Optional<UsuarioEntity> existingUser = usuarioRepository.findByUsername(usuario.getUsername());
             if (existingUser.isPresent()) {
                 redirectAttributes.addFlashAttribute("errorMessage", "El nombre de usuario ya está en uso");
                 return "redirect:/login";

@@ -1,13 +1,16 @@
 package zorroAbarrotes.proyecto.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "proveedor")
+@Entity
+@Table(name = "proveedor")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,10 +31,12 @@ public class ProveedorEntity {
     private String direccion;
 
     @NotBlank
+    @Pattern(regexp = "^\\d{10}$", message = "Telefono debe tener 10 dígitos")
     @Column(name = "telefono")
     private String telefono;
 
     @NotBlank
+    @Email(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",message = "Debe ser un email valido")
     @Column(name = "correo")
     private String correo;
 

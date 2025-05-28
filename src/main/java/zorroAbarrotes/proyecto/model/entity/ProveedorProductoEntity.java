@@ -1,15 +1,14 @@
 package zorroAbarrotes.proyecto.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import zorroAbarrotes.proyecto.model.id.ProveedorProductoId;
 
-@Entity(name = "proveedor_producto")
+@Entity
+@Table(name = "proveedor_producto")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,4 +23,14 @@ public class ProveedorProductoEntity {
 
     @Column(name = "tiempo_entrega")
     private Integer tiempoEntrega;
+
+    @ManyToOne
+    @MapsId("idProducto")
+    @JoinColumn(name = "id_producto", nullable = false)
+    private ProductoEntity producto;
+
+    @ManyToOne
+    @MapsId("idProveedor")
+    @JoinColumn(name="id_proveedor", nullable = false)
+    private ProveedorEntity proveedor;
 }

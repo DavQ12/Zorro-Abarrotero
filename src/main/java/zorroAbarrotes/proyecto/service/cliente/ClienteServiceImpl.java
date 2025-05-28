@@ -38,7 +38,25 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public Optional<ClienteEntity> findByCorreo(String correo) {
-        return clienteRepository.findByCorreo(correo);
+    public Optional<ClienteEntity> findByIdClienteEntity(Long id) {
+        return clienteRepository.findById(id);
+    }
+
+    @Override
+    public ClienteEntity findByCorreo(String correo) {
+        Optional<ClienteEntity> actor = clienteRepository.findByCorreo(correo);
+        return actor.orElse(null);
+    }
+
+    @Override
+    public ClienteEntity findByTelefono(String telefono) {
+        Optional<ClienteEntity> actor = clienteRepository.findByTelefono(telefono);
+        return actor.orElse(null);
+    }
+
+    @Override
+    public ClienteEntity findByIdentificador(String identificador) {
+        Optional<ClienteEntity> cliente = clienteRepository.findByIdentificador(identificador);
+        return cliente.orElse(null);
     }
 }

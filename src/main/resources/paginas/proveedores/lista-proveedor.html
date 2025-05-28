@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+
+<main class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: #ff6b00">Lista de Proveedores</h1>
+        <a href="/proveedor/alta-proveedor" class="btn btn-warning">
+            <i class="fas fa-user-plus"></i> Nuevo Proveedor
+        </a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <style>
+                :root {
+                    --orange: #ff6b00;
+                    --orange-light: #ff8533;
+                    --orange-dark: #e05e00;
+                    --red: #dc3545;
+                    --red-light: #f5c6cb;
+                    --red-dark: #c82333;
+                    --border-radius: 10px;
+                }
+
+                .btn-warning {
+                    background-color: var(--orange) !important;
+                    border-color: var(--orange) !important;
+                    color: white !important;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-warning:hover {
+                    background-color: var(--orange-light) !important;
+                    border-color: var(--orange-light) !important;
+                    transform: translateY(-2px);
+                }
+
+                .btn-warning:active {
+                    background-color: var(--orange-dark) !important;
+                    border-color: var(--orange-dark) !important;
+                    transform: translateY(0);
+                }
+
+                .table-warning {
+                    background-color: rgba(255, 107, 0, 0.15);
+                    color: var(--orange);
+                }
+
+                .table th {
+                    background-color: white;
+                    color: var(--orange);
+                    border-radius: var(--border-radius) var(--border-radius) 0 0;
+                }
+
+                .text-warning {
+                    color: var(--orange) !important;
+                }
+
+                .btn-orange {
+                    background-color: var(--orange);
+                    border-color: var(--orange);
+                    color: white;
+                    transition: all 0.3s ease;
+                    border-radius: var(--border-radius);
+                }
+
+                .btn-orange:hover {
+                    background-color: var(--orange-light);
+                    border-color: var(--orange-light);
+                    transform: translateY(-2px);
+                }
+
+                .btn-orange:active {
+                    background-color: var(--orange-dark);
+                    border-color: var(--orange-dark);
+                    transform: translateY(0);
+                }
+
+                .btn-red-danger {
+                    background-color: var(--red);
+                    color: white;
+                    border: 1px solid var(--red);
+                    transition: all 0.3s ease;
+                    border-radius: var(--border-radius);
+                }
+
+                .btn-red-danger:hover {
+                    background-color: var(--red-light);
+                    transform: translateY(-2px);
+                }
+
+                .btn-red-danger:active {
+                    background-color: var(--red-dark);
+                    transform: translateY(0);
+                }
+
+                .btn-orange i,
+                .btn-orange-danger i {
+                    margin-left: 0.25rem;
+                    transition: transform 0.3s ease;
+                }
+
+                .btn-orange:hover i,
+                .btn-orange-danger:hover i {
+                    transform: scale(1.1);
+                }
+            </style>
+            <div class="alert alert-info" th:if="${lista.isEmpty()}">
+                No hay proveedores registrados en el sistema.
+            </div>
+
+            <div class="table-responsive" th:if="${!lista.isEmpty()}">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Empresa</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="proveedor : ${lista}">
+                        <td th:text="${proveedor.nombre}"></td>
+                        <td th:text="${proveedor.direccion}"></td>
+                        <td th:text="${proveedor.telefono}"></td>
+                        <td th:text="${proveedor.correo}"></td>
+                        <td th:text="${proveedor.empresa}"></td>
+                        <td>
+                            <a th:href="@{/proveedor/editar/{id}(id=${proveedor.id})}" class="btn btn-warning btn-sm">
+                                Editar <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/proveedor/eliminar/{id}(id=${proveedor.id})}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Estás seguro de eliminar este proveedor?');">
+                                Eliminar <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

@@ -97,124 +97,76 @@
                 <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
             </div>
             <h1 class="login-title" th:text="${contenido}"></h1>
+
             
-            <div th:if="${error != null}" class="alert alert-danger" role="alert">
-                <p th:text="${error}"></p>
-            </div>
-            
-            <form th:action="@{/usuarios/guardar}" method="post" class="needs-validation" novalidate>
-                <!-- Campo oculto para el ID cuando se está editando -->
-                <input type="hidden" name="id" th:value="${usuario.id}">
+            <form th:action="@{/usuario/guardar-usuario}" method="post" th:object="${usuario}">
+
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+
+
+                <div th:if="${#fields.hasErrors('*')}" class='alert alert-danger' role="alert">
+                    Verifique los siguientes inconvenientes
+                    <ul>
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
                 
                 <div class="mb-3 row">
                     <label for="usuario" class="col-sm-3 col-form-label text-end">Usuario:</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="usuario" name="usuario" th:value="${usuario.usuario}" required>
-                        <div class="invalid-feedback">
-                            Por favor ingrese un nombre de usuario válido.
-                        </div>
+                        <input type="text" class="form-control" id="usuario" name="usuario" th:field="*{username}" required>
                     </div>
                 </div>
                 
                 <div class="mb-3 row">
                     <label for="correo" class="col-sm-3 col-form-label text-end">Correo:</label>
                     <div class="col-sm-9">
-                        <input type="email" class="form-control" id="correo" name="correo" th:value="${usuario.correo}" required>
-                        <div class="invalid-feedback">
-                            Por favor ingrese un correo electrónico válido.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mb-3 row">
-                    <label for="contrasena" class="col-sm-3 col-form-label text-end">Contraseña:</label>
-                    <div class="col-sm-9">
-                        <input type="password" class="form-control" id="contrasena" name="contrasena" th:value="${usuario.contrasena}" required>
-                        <div class="invalid-feedback">
-                            Por favor ingrese una contraseña válida.
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mb-3 row">
-                    <label for="rolId" class="col-sm-3 col-form-label text-end">Rol:</label>
-                    <div class="col-sm-9">
-                        <select class="form-select" id="rolId" name="rolId" required>
-                            <option value="">Seleccione un rol</option>
-                            <option th:each="rolItem : ${roles}" th:value="${rolItem.id}" th:text="${rolItem.descripcion}"
-                                    th:selected="${usuario.rol != null && usuario.rol.id == rolItem.id}"></option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Por favor seleccione un rol.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Campos específicos para clientes -->
-                <div id="clienteFields" class="mb-3 row" style="display: none;">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre:</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese su nombre.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="apellidop" class="form-label">Apellido Paterno:</label>
-                            <input type="text" class="form-control" id="apellidop" name="apellidop" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese su apellido paterno.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="apellidom" class="form-label">Apellido Materno:</label>
-                            <input type="text" class="form-control" id="apellidom" name="apellidom">
-                            <div class="invalid-feedback">
-                                Por favor ingrese su apellido materno.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="telefono" class="form-label">Teléfono:</label>
-                            <input type="tel" class="form-control" id="telefono" name="telefono" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese su teléfono.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="num_cuenta" class="form-label">Número de Cuenta:</label>
-                            <input type="text" class="form-control" id="num_cuenta" name="num_cuenta" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese su número de cuenta.
-                            </div>
-                        </div>
+                        <input type="text" class="form-control" id="correo" name="correo" th:field="*{correo}" required>
                     </div>
                 </div>
 
-                <script>
-                    // Mostrar/ocultar campos de cliente según el rol seleccionado
-                    document.getElementById('rolId').addEventListener('change', function() {
-                        const clienteFields = document.getElementById('clienteFields');
-                        clienteFields.style.display = this.value == '3' ? 'block' : 'none';
-                    });
-                </script>
+                <div class="mb-3 row">
+                    <label for="contrasena" class="col-sm-3 col-form-label text-end">Contraseña:</label>
+                    <div class="col-sm-9">
+                        <!-- Si es un nuevo usuario (id es null) -->
+                        <input type="password" class="form-control" id="contrasenaN" name="contrasena"
+                               th:field="*{contrasena}" th:if="${usuario.id == null}" required minlength="6">
+                        <small class="form-text text-muted">La contraseña debe tener al menos 6 caracteres.</small>
+
+                        <!-- Si se está editando un usuario existente -->
+                        <input type="password" class="form-control" id="contrasena" name="contrasena"
+                               placeholder="Nueva contraseña (dejar vacío para conservar)"
+                               th:unless="${usuario.id == null}" />
+                    </div>
+                </div>
+
+                <div class="form-floating">
+
+                    <select class="form-select" id="rol" name="rol" th:field="*{rol}">
+                        <option value="" disabled selected>Seleccione un rol</option>
+                        <option th:each="dir : ${roles}"
+                                th:value="${dir.id}"
+                                th:text="${dir.descripcion}">
+                        </option>
+                    </select>
+                    <label for="rol" class="form-label">Rol</label>
+                </div>
+
                 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                    <a th:href="@{/usuarios/lista}" class="btn btn-outline-primary me-md-2">
+                    <a th:href="@{/usuario/lista}" class="btn btn-outline-primary me-md-2">
                         <i class="fas fa-arrow-left"></i> Volver
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Guardar
                     </button>
                 </div>
+
+                <!-- Campo oculto para el ID cuando se está editando -->
+                <input type="hidden" name="id" th:value="${id}"/>
             </form>
         </div>
     </div>

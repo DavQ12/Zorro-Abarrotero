@@ -33,4 +33,23 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<UsuarioEntity> usuario = usuarioRepository.findById(id);
         return usuario.orElse(null);
     }
+
+    @Override
+    public Optional<UsuarioEntity> findByIdCUsuarioEntity(Long id) {
+        return usuarioRepository.findById(id);
+    }
+
+    @Override
+    public UsuarioEntity findByCorreo(String correo) {
+        Optional<UsuarioEntity> usuario = usuarioRepository.findByCorreo(correo);
+        return usuario.orElse(null);
+    }
+
+    @Override
+    public UsuarioEntity findByUsername(String usurio) {
+        Optional<UsuarioEntity> usuario = usuarioRepository.findByUsername(usurio);
+        return usuario.orElse(null);
+    }
+
+
 }

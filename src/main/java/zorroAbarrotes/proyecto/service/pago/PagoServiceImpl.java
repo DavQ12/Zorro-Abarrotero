@@ -29,8 +29,7 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
-    public PagoEntity findById(Long id) {
-        Optional<PagoEntity> actor = pagoRepository.findById(id);
-        return actor.orElse(null);
+    public Optional<PagoEntity> findById(Long id) {
+        return pagoRepository.findById(id);
     }
 }

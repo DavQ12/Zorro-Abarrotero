@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,23 +69,24 @@
                 <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
             </div>
             <h2 class="registro-title" th:text="${cliente.id} ? 'Editar Cliente' : 'Nuevo Cliente'" style="margin-top: 20px;"></h2>
-            
-            <div th:if="${errorMessage}" class="alert alert-danger">
-                <span th:text="${errorMessage}"></span>
-            </div>
-            <div th:if="${error}" class="alert alert-danger">
-                <span th:text="${error}"></span>
-            </div>
-            
-            <form th:if="!${editar}" th:action="@{/clientes/registro}" method="post" th:object="${cliente}" class="needs-validation" novalidate>
+
+            <form th:if="!${editar}" sec:authorize="hasRole('administrador')" th:action="@{/clientes/registro-admin}" method="post" th:object="${cliente}">
+
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <span th:text="${errorMessage}"></span>
+                </div>
+                <div th:if="${#fields.hasErrors('*')}" class='alert alert-danger' role="alert">
+                    Verifique los siguientes inconvenientes
+                    <ul>
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="nombre">Nombre</label>
                             <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese un nombre válido.
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -106,16 +107,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="correo">Correo electrónico</label>
-                            <input type="email" id="correo" th:field="*{correo}" class="form-control" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese un correo electrónico válido.
-                            </div>
+                            <input type="text" id="correo" th:field="*{correo}" class="form-control" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="telefono">Teléfono</label>
-                            <input type="tel" id="telefono" th:field="*{telefono}" class="form-control" required>
+                            <label for="telefono">Teléfonoooooo</label>
+                            <input type="text" id="telefono" th:field="*{telefono}" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -123,18 +121,10 @@
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="numCuenta">Número de Cuenta</label>
-                            <input type="text" id="numCuenta" th:field="*{numCuenta}" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
                             <label for="contrasena">Contraseña</label>
-                            <input type="password" id="contrasena" th:field="*{contrasena}" class="form-control" required minlength="6">
-                            <div class="invalid-feedback">
-                                Por favor ingrese una contraseña válida (mínimo 6 caracteres).
-                            </div>
+                            <input type="text" id="contrasena" th:field="*{contrasena}" class="form-control" required minlength="6">
                             <small class="form-text text-muted">La contraseña debe tener al menos 6 caracteres.</small>
+                            <div th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></div>
                         </div>
                     </div>
                 </div>
@@ -149,17 +139,24 @@
             </form>
 
             <!-- Formulario de edición -->
-            <form th:if="${editar}" th:action="@{/clientes/guardar}" method="post" th:object="${cliente}" class="needs-validation" novalidate>
+            <form th:if="${editar}" sec:authorize="hasRole('administrador')" th:action="@{/clientes/registro}" method="post" th:object="${cliente}">
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <span th:text="${errorMessage}"></span>
+                </div>
+
+                <div th:if="${#fields.hasErrors('*')}" class='alert alert-danger' role="alert">
+                    Verifique los siguientes inconvenientes
+                    <ul>
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
                 <input type="hidden" th:field="*{id}" />
-            
+
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="nombre">Nombre</label>
                             <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese un nombre válido.
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -180,16 +177,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="correo">Correo electrónico</label>
-                            <input type="email" id="correo" th:field="*{correo}" class="form-control" required>
-                            <div class="invalid-feedback">
-                                Por favor ingrese un correo electrónico válido.
-                            </div>
+                            <input type="text" id="correo" th:field="*{correo}" class="form-control" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="telefono">Teléfono</label>
-                            <input type="tel" id="telefono" th:field="*{telefono}" class="form-control" required>
+                            <input type="text" id="telefono" th:field="*{telefono}" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -197,17 +191,15 @@
                 <div class="row mt-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="numCuenta">Número de cuenta</label>
-                            <input type="text" id="numCuenta" th:field="*{numCuenta}" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
                             <label for="contrasena">Contraseña (dejar vacío si no desea cambiarla)</label>
-                            <input type="password" id="contrasena" th:field="*{contrasena}" class="form-control">
+                            <input type="text" id="contrasena" name="contrasena" class="form-control">
+                            <div th:if="${#fields.hasErrors('contrasena')}">
+                                <p th:each="err : ${#fields.errors('contrasena')}" th:text="${err}"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                     <a th:href="@{/clientes/lista}" class="btn btn-outline-primary me-md-2">
                         <i class="fas fa-arrow-left"></i> Volver
@@ -215,30 +207,78 @@
                     <button type="submit" class="btn btn-primary">Actualizar Cliente</button>
                 </div>
             </form>
+
+<!--            formulario para q caja registre clientes-->
+
+            <form th:if="!${editar}" sec:authorize="hasRole('caja')" th:action="@{/clientes/registro}" method="post" th:object="${cliente}">
+
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <span th:text="${errorMessage}"></span>
+                </div>
+                <div th:if="${#fields.hasErrors('*')}" class='alert alert-danger' role="alert">
+                    Verifique los siguientes inconvenientes
+                    <ul>
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="apellidoP">Apellido Paterno</label>
+                            <input type="text" id="apellidoP" th:field="*{apellidoP}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="apellidoM">Apellido Materno</label>
+                            <input type="text" id="apellidoM" th:field="*{apellidoM}" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="correo">Correo electrónico</label>
+                            <input type="text" id="correo" th:field="*{correo}" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="telefono">Teléfonoooooo</label>
+                            <input type="text" id="telefono" th:field="*{telefono}" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="contrasena">Contraseña</label>
+                            <input type="text" id="contrasena" th:field="*{contrasena}" class="form-control" required minlength="6">
+                            <small class="form-text text-muted">La contraseña debe tener al menos 6 caracteres.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a th:href="@{/login}" class="btn btn-outline-primary me-md-2">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${cliente.id} ? 'Actualizar Cliente' : 'Registrar Cliente'"></span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    
+
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function () {
-            'use strict'
-
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.querySelectorAll('.needs-validation')
-
-            // Loop over them and prevent submission
-            Array.prototype.slice.call(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
-    </script>
 </body>
 </html>

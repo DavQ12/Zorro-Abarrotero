@@ -9,4 +9,5 @@ public interface RolService {
     List<RolEntity> findAll();
     void deleteById(Long id);
     RolEntity findById(Long id);
+
 }

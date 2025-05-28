@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
-@Entity(name = "carrito")
+@Entity
+@Table(name = "carrito")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,7 +29,11 @@ public class CarritoEntity {
     @Column(name = "total")
     private Double total;
 
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductoCarritoEntity> productosCarrito;
+
     @NotNull
     @Column(name = "fecha")
-    private LocalDateTime fecha;
+    @Builder.Default
+    private LocalDateTime fecha = LocalDateTime.now();
 }

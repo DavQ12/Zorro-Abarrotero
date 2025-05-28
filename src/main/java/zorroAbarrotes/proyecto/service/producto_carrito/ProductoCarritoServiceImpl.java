@@ -2,6 +2,7 @@ package zorroAbarrotes.proyecto.service.producto_carrito;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import zorroAbarrotes.proyecto.model.entity.ProductoCarritoEntity;
 import zorroAbarrotes.proyecto.model.id.ProductoCarritoId;
 import zorroAbarrotes.proyecto.repository.ProductoCarritoRepository;
@@ -11,12 +12,12 @@ import java.util.Optional;
 
 @Service
 public class ProductoCarritoServiceImpl implements ProductoCarritoService {
-    @Autowired
-    ProductoCarritoRepository productoCarritoRepository;
+    
+    private final ProductoCarritoRepository productoCarritoRepository;
 
-    @Override
-    public ProductoCarritoEntity save(ProductoCarritoEntity actor) {
-        return productoCarritoRepository.save(actor);
+    @Autowired
+    public ProductoCarritoServiceImpl(ProductoCarritoRepository productoCarritoRepository) {
+        this.productoCarritoRepository = productoCarritoRepository;
     }
 
     @Override
@@ -25,13 +26,23 @@ public class ProductoCarritoServiceImpl implements ProductoCarritoService {
     }
 
     @Override
+    public Optional<ProductoCarritoEntity> findById(ProductoCarritoId id) {
+        return productoCarritoRepository.findById(id);
+    }
+
+    @Override
+    public ProductoCarritoEntity save(ProductoCarritoEntity productoCarrito) {
+        return productoCarritoRepository.save(productoCarrito);
+    }
+
+    @Override
     public void deleteById(ProductoCarritoId id) {
         productoCarritoRepository.deleteById(id);
     }
 
     @Override
-    public ProductoCarritoEntity findById(ProductoCarritoId id) {
-        Optional<ProductoCarritoEntity> actor = productoCarritoRepository.findById(id);
-        return actor.orElse(null);
+    @Transactional
+    public void deleteByCarritoId(Long carritoId) {
+        productoCarritoRepository.deleteByCarritoId(carritoId);
     }
 }

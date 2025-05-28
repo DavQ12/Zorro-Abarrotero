@@ -14,9 +14,8 @@
             </a>
         </div>
 
-        <div class="alert alert-warning" th:if="${param.success}" th:with="message=${param.success[0]}">
-            <i class="fas fa-check-circle me-2"></i>
-            <span th:text="${message}">Cliente creado con éxito</span>
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}"></span>
         </div>
 
         <div class="card">
@@ -125,7 +124,7 @@
                                 <th>Correo</th>
                                 <th>Teléfono</th>
                                 <th>Número de Cuenta</th>
-                                <th>Acciones</th>
+                                <th sec:authorize="hasRole('administrador')" >Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,10 +137,10 @@
                                 <td th:text="${cliente.numCuenta}">Número de Cuenta</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-orange">
+                                        <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-orange" sec:authorize="hasRole('administrador')">
                                             <i class="fas fa-pen-nib" aria-hidden="true"></i> Modificar
                                         </a>
-                                        <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-red-danger" onclick="return confirm('¿Estás seguro de eliminar este cliente?')">
+                                        <a sec:authorize="hasRole('administrador')" th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-red-danger" onclick="return confirm('¿Estás seguro de eliminar este cliente?')">
                                             <i class="fas fa-trash-alt" aria-hidden="true"></i> Eliminar
                                         </a>
                                     </div>

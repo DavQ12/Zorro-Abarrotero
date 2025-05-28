@@ -21,7 +21,7 @@ class UsuarioServiceImplTest {
                 .build();
 
         UsuarioEntity usuario = UsuarioEntity.builder()
-                .usuario("cajera1")
+                .username("cajera1")
                 .contrasena("cajera1")
                 .correo("correo@cajera1.com")
                 .rol(rol)

@@ -116,9 +116,9 @@
                 ¡Registro exitoso! Ahora puedes iniciar sesión.
             </div>
             
-            <form th:action="@{/login}" method="post">
+            <form th:action="@{/}" method="post">
                 <div class="form-group">
-                    <label for="username">Usuario o Correo Electrónico</label>
+                    <label for="username">Usuario</label>
                     <input type="text" id="username" name="username" class="form-control" required autofocus placeholder="Ingrese su usuario o correo">
                 </div>
                 
@@ -128,14 +128,8 @@
                 </div>
                 
                 <button type="submit" class="btn btn-primary mb-3">Iniciar Sesión</button>
-                <a href="/" class="btn btn-warning">
-                    <i class="bi bi-arrow-left"></i> Volver
-                </a>
             </form>
-            
-            <div class="register-link">
-                <p>¿No tienes una cuenta? <a th:href="@{/clientes/registro}">Regístrate aquí</a></p>
-            </div>
+
         </div>
     </div>
     

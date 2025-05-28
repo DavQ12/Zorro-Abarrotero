@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="container mt-4">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-logo img {
+            max-width: 200px;
+            height: auto;
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+            font-size: 24px;
+        }
+        .btn-orange {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-orange:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+        }
+        .btn-outline-warning {
+            color: #ff6b00;
+            border-color: #ff6b00;
+        }
+        .btn-outline-warning:hover {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .form-control, .form-select {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-color: #ddd;
+        }
+        .form-select:focus {
+            border-color: #ff6b00;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        .invalid-feedback {
+            color: #ff6b00;
+            display: block;
+        }
+        .form-select:invalid {
+            border-color: #ff6b00;
+        }
+        .form-select:focus:invalid {
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        .form-label {
+            color: #343a40;
+            font-weight: 500;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        .row {
+            margin-bottom: 15px;
+        }
+        .col-form-label {
+            font-weight: 500;
+            color: #343a40;
+        }
+    </style>
+    <div class="form-container">
+        <div class="form-logo">
+            <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
+        </div>
+        <div class="form-title">
+            <h1 th:text="${productoCarrito.id != null ? 'Editar Producto en Carrito' : 'Nuevo Producto en Carrito'}"></h1>
+        </div>
+        <div class="row justify-content-center">
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+            
+            <form th:action="@{/producto-carrito/guardar}" method="post" class="needs-validation" novalidate>
+                <div class="row mb-3">
+                    <div th:if="${productoCarrito.id != null}">
+                        <!-- Campos ocultos para edición -->
+                        <input type="hidden" name="isEditing" value="true">
+                        <input type="hidden" name="originalIdCarrito" th:value="${productoCarrito.carrito.id}">
+                        <input type="hidden" name="originalIdProducto" th:value="${productoCarrito.producto.id}">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="idCarrito" class="form-label">Carrito</label>
+                        <select class="form-select" id="idCarrito" name="idCarrito"
+                                th:disabled="${productoCarrito.id != null}">
+                            <option value="" th:if="${productoCarrito.id == null}">Seleccione un carrito</option>
+                            <option th:each="carrito : ${carritos}"
+                                    th:value="${carrito.id}"
+                                    th:text="${carrito.id}"
+                                    th:selected="${productoCarrito.carrito != null && productoCarrito.carrito.id == carrito.id}"></option>
+                        </select>
+                        <div class="invalid-feedback">Por favor seleccione un carrito.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="idProducto" class="form-label">Producto</label>
+                        <select class="form-select" id="idProducto" name="idProducto"
+                                th:disabled="${productoCarrito.id != null}">
+                            <option value="" th:if="${productoCarrito.id == null}">Seleccione un producto</option>
+                            <option th:each="producto : ${productos}"
+                                    th:value="${producto.id}"
+                                    th:text="${producto.nombre}"
+                                    th:attr="data-precio=${producto.precio}"
+                                    th:selected="${productoCarrito.producto != null && productoCarrito.producto.id == producto.id}"></option>
+                        </select>
+                        <div class="invalid-feedback">Por favor seleccione un producto.</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cantidad" class="form-label">Cantidad</label>
+                    <input type="number" class="form-control" id="cantidad" name="cantidad" 
+                           min="1" required
+                           th:value="${productoCarrito.cantidad != null ? productoCarrito.cantidad : 1}">
+                    <div class="invalid-feedback">Por favor ingrese una cantidad válida.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="total" class="form-label">Total</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="text" class="form-control" id="total" name="total" 
+                               th:value="${productoCarrito.total != null ? #numbers.formatDecimal(productoCarrito.total, 0, 2) : '0.00'}"
+                               readonly>
+                    </div>
+                </div>
+                  
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a th:href="@{/producto-carrito/lista}" class="btn btn-outline-warning me-md-2">
+                        <i class="bi bi-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-orange">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<script>
+    // Calcular total inicial si estamos editando
+    document.addEventListener('DOMContentLoaded', function() {
+        calcularTotal();
+    });
+
+    // Actualizar total cuando cambia la cantidad o el producto
+    document.getElementById('cantidad').addEventListener('input', calcularTotal);
+    document.getElementById('idProducto').addEventListener('change', calcularTotal);
+
+    function calcularTotal() {
+        const cantidad = document.getElementById('cantidad').value;
+        const productoSelect = document.getElementById('idProducto');
+        const productoOption = productoSelect.options[productoSelect.selectedIndex];
+        const precio = productoOption.getAttribute('data-precio');
+        
+        if (cantidad && precio && cantidad > 0) {
+            const total = cantidad * parseFloat(precio);
+            document.getElementById('total').value = total.toFixed(2);
+        } else {
+            document.getElementById('total').value = '';
+        }
+    }
+</script>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

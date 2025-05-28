@@ -1,19 +1,16 @@
 package zorroAbarrotes.proyecto.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import zorroAbarrotes.proyecto.model.id.ProductoCarritoId;
 
-@Entity(name = "producto_carrito")
+@Entity
+@Table(name = "producto_carrito")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString(exclude = {"carrito", "producto"})
 public class ProductoCarritoEntity {
 
     @EmbeddedId
@@ -24,5 +21,15 @@ public class ProductoCarritoEntity {
 
     @Column(name = "total")
     private Double total;
+
+    @ManyToOne
+    @MapsId("idCarrito")
+    @JoinColumn(name = "id_carrito")
+    private CarritoEntity carrito;
+
+    @ManyToOne
+    @MapsId("idProducto")
+    @JoinColumn(name = "id_producto")
+    private ProductoEntity producto;
 
 }

@@ -11,7 +11,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity(name = "venta")
+@Entity
+@Table(name = "venta")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,7 +38,7 @@ public class VentaEntity {
     private PagoEntity pago;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "id_carrito")
     private CarritoEntity carrito;
 

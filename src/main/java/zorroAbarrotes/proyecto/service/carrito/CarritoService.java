@@ -3,10 +3,14 @@ package zorroAbarrotes.proyecto.service.carrito;
 import zorroAbarrotes.proyecto.model.entity.CarritoEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CarritoService {
-    CarritoEntity save(CarritoEntity actor);
     List<CarritoEntity> findAll();
+    List<CarritoEntity> findAllDisponibles();
+    Optional<CarritoEntity> findById(Long id);
+    CarritoEntity save(CarritoEntity carrito);
     void deleteById(Long id);
-    CarritoEntity findById(Long id);
+    void deleteByIdWithCascade(Long id);
+    void deleteProductoCarritoByCarritoId(Long carritoId);
 }

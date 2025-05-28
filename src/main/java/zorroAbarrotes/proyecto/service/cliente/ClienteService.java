@@ -11,5 +11,8 @@ public interface ClienteService {
     List<ClienteEntity> findAll();
     void deleteById(Long id);
     ClienteEntity findById(Long id);
-    Optional<ClienteEntity> findByCorreo(String correo);
+    Optional<ClienteEntity> findByIdClienteEntity(Long id);
+    ClienteEntity findByCorreo(String correo);
+    ClienteEntity findByTelefono(String telefono);
+    ClienteEntity findByIdentificador(String identificador);
 }

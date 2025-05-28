@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header></header>
+
+<main class="container">
+    <!-- Sección de banner principal con logo -->
+    <div sec:authorize="hasRole('caja')" class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <div class="card shadow border-warning">
+                <div class="card-header bg-warning text-white text-center">
+                    <h4 class="mb-0">Inicio de sesión del Cliente</h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/clientes/login}" method="post" th:object="${cliente}">
+
+                        <div th:if="${success}" class="alert alert-success">
+                            <span th:text="${success}"></span>
+                        </div>
+
+                        <div th:if="${errorMessage}" class="alert alert-danger">
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="identificador" class="form-label">Correo, Teléfono o Número de Cuenta</label>
+                            <input type="text" id="identificador" name="identificador" class="form-control" placeholder="Ej. correo@ejemplo.com o 5522334455 o 12345678" required
+                                   th:field="*{identificador}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contrasena" class="form-label">Contraseña</label>
+                            <input type="password" id="contrasena" name="contrasena" class="form-control" required th:field="*{contrasena}">
+                        </div>
+
+                        <div th:if="${param.error}" class="alert alert-danger mt-3 text-center">
+                            Usuario no registrado o credenciales incorrectas.
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-warning">Iniciar Sesión</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p>¿No está registrado?</p>
+                        <a href="/clientes/registro" class="btn btn-outline-secondary">Registrarse</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+
+<style>
+    :root {
+        --primary-color: #ff6b00;
+        --primary-dark: #e05e00;
+    }
+
+    .icon-container {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        background-color: var(--primary-color);
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+        border: none !important;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .btn-light {
+        background-color: #fff;
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+        font-weight: bold;
+        padding: 8px 20px;
+    }
+
+    .btn-light:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-light {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+        font-weight: bold;
+        padding: 8px 20px;
+    }
+
+    .btn-outline-light:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .alert-warning {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: 2rem;
+    }
+
+    .alert-warning .alert-heading {
+        color: white;
+    }
+
+    .alert-warning p {
+        color: white;
+    }
+
+    .text-warning {
+        color: var(--primary-color) !important;
+    }
+
+    .bg-warning {
+        background-color: var(--primary-color) !important;
+    }
+
+    .border-warning {
+        border-color: var(--primary-color) !important;
+    }
+
+</style>
+</body>
+</html>
