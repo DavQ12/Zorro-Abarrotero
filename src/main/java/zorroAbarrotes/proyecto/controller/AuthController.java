@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import zorroAbarrotes.proyecto.model.entity.ClienteEntity;
@@ -17,6 +19,7 @@ import zorroAbarrotes.proyecto.repository.UsuarioRepository;
 import zorroAbarrotes.proyecto.service.producto.ProductoService;
 import zorroAbarrotes.proyecto.service.rol.RolService;
 import zorroAbarrotes.proyecto.service.usuario.UsuarioService;
+import zorroAbarrotes.proyecto.util.ListarProductosExcel;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,12 +49,29 @@ public class AuthController {
         return "clientes/login-clientes";
     }
 
+//    @GetMapping("/admin")
+//    public String homeAdmin(Model model) {
+//        List<ProductoEntity> productos = productoService.findAll();
+//        model.addAttribute("productos", productos);
+//        model.addAttribute("contenido", "Bienvenido Administrador a Zorro Abarrotero");
+//        return "login/admin";
+//    }
+
     @GetMapping("/admin")
-    public String homeAdmin(Model model) {
+    public ModelAndView homeAdmin(@RequestParam(required = false) String format) {
         List<ProductoEntity> productos = productoService.findAll();
-        model.addAttribute("productos", productos);
-        model.addAttribute("contenido", "Bienvenido Administrador a Zorro Abarrotero");
-        return "login/admin";
+
+        if ("xlsx".equals(format)) {
+            ModelAndView mav = new ModelAndView();
+            mav.addObject("productos", productos);
+            mav.setView(new ListarProductosExcel());
+            return mav;
+        }
+
+        ModelAndView mav = new ModelAndView("login/admin");
+        mav.addObject("productos", productos);
+        mav.addObject("contenido", "Bienvenido Administrador a Zorro Abarrotero");
+        return mav;
     }
 
 
