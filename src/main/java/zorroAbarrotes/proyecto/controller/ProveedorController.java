@@ -190,8 +190,8 @@ public class ProveedorController {
         System.out.println("---------------------------");
 
         //configuracion para mandar el correo
-        String password="";
-        String username = "";
+        String password="qbmvmxqwtafzmkqn";
+        String username = "angelquinterodev12@gmail.com";
         String fechaEnvio = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
         //propiedades del servicio de gmail
         Properties p = System.getProperties();

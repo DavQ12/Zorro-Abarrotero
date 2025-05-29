@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +27,7 @@ import zorroAbarrotes.proyecto.service.usuario.UsuarioService;
 import zorroAbarrotes.proyecto.service.venta.VentaService;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -64,8 +62,15 @@ public class VenderController {
 
     //quite ("/")
     @GetMapping("/vender")
-    public String mostrarVistaVenta(Model model, HttpSession session) {
+    public String mostrarVistaVenta(Model model, HttpSession session, Authentication authentication) {
         try {
+            String role = "";
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            for (GrantedAuthority authority : authorities) {
+                role = authority.getAuthority();
+            }
+
             // Obtener todos los productos disponibles
             Iterable<ProductoEntity> productos = productoService.findAll();
 
@@ -79,10 +84,14 @@ public class VenderController {
             }
 
             ClienteEntity cliente = (ClienteEntity) session.getAttribute("clienteReg");
-            if (cliente != null) {
+            if (cliente != null && role.equals("ROLE_caja")) {
                 System.out.println("diferente nullo");
                 model.addAttribute("cliente", cliente);
                 return "ventaZorro/vender";
+            }else{
+                if (role.equals("ROLE_caja") && cliente == null) {
+                    return "denegado/cliente-nolog";
+                }
             }
             return "ventaZorro/vender";
         } catch (Exception e) {
@@ -318,7 +327,7 @@ public class VenderController {
             // Esto es crucial para que Hibernate pueda inicializar la colección
             // cuando el carrito se carga posteriormente.
             // Aunque los productos se guardan individualmente, es bueno tener la lista aquí.
-            List<ProductoCarritoEntity> productosEnCarrito = new java.util.ArrayList<>();
+            List<ProductoCarritoEntity> productosEnCarrito = new ArrayList<>();
 
 
             // Procesar productos del carrito desde el DTO

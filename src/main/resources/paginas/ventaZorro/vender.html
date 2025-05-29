@@ -311,7 +311,7 @@
 
 <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
 
-<script>
+<script th:inline="javascript">
     let carrito = [];
 
     function agregarAlCarrito(productId) {
@@ -535,6 +535,7 @@
                             numeroCuentaInput.value = '';
                         }
                         document.getElementById('metodoPago').value = '';
+                        window.location.href = [[${cliente == null}]] ? '/ventaZorro/lista-ventasZorro' : '/clientes/inicio';
                     });
                 } else {
                     throw new Error(data.message || 'Hubo un error al registrar la venta.');

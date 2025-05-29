@@ -43,6 +43,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String home(Model model) {
+        System.out.println("entra a login");
         ClienteEntity cliente = new ClienteEntity();
         model.addAttribute("cliente", cliente);
         model.addAttribute("contenido", "Bienvenido Caja a Zorro Abarrotero");
@@ -77,6 +78,7 @@ public class AuthController {
 
     @GetMapping("/")
     public String loginForm() {
+        System.out.println("entre raiz usuarios");
         return "login/login";
     }
 

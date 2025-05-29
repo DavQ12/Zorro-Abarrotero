@@ -401,6 +401,13 @@
                                     </button>
                                 </form>
                             </li>
+                            <li sec:authorize="hasRole('caja')">
+                                <form th:action="@{/clientes/salir}" method="post" class="d-inline">
+                                    <button class="dropdown-item" type="submit">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión Cliente
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </li>
                 </ul>

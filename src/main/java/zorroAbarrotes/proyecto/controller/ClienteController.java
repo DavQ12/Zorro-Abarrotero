@@ -60,10 +60,22 @@ public class ClienteController {
 
     }
 
+    @PostMapping("/clientes/salir")
+    public String logout(RedirectAttributes flash, HttpSession session) {
+        System.out.println("haciendo pruebas");
+        session.removeAttribute("clienteReg");// Elimina todos los atributos de sesión
+        flash.addFlashAttribute("success", "Logout exitoso");
+        return "redirect:/login";
+    }
+
+    //si hay cliente logueado entra si no no xd
     @GetMapping("/clientes/inicio")
     public String mostrarIncio(Model model, HttpSession session) {
         System.out.println("mostrarIncio");
         System.out.println(session.getAttribute("clienteReg"));
+        if(session.getAttribute("clienteReg") == null){
+            return "denegado/cliente-nolog";
+        }
         ClienteEntity cliente = (ClienteEntity) session.getAttribute("clienteReg");
         model.addAttribute("cliente", cliente);
         return "plantillas/index";
