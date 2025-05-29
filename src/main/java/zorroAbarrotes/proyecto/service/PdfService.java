@@ -35,7 +35,7 @@ public class PdfService {
     private static final float DEFAULT_PADDING = 8f;
     private static final float HEADER_PADDING = 10f;
 
-    private final String RUTA_IMAGENES = "/imagenes/";
+    private final String RUTA_IMAGENES = "/home/angelquintero/ImagenesZorro/";
 
     public ByteArrayOutputStream generarPdfVenta(VentaEntity venta) throws DocumentException {
         if (venta.getCarrito() == null ||

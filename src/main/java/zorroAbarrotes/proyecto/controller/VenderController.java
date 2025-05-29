@@ -1,5 +1,6 @@
 package zorroAbarrotes.proyecto.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -61,8 +62,9 @@ public class VenderController {
 
     private final String RUTA_IMAGENES = "/imagenes/";
 
-    @GetMapping({"/", "/vender"})
-    public String mostrarVistaVenta(Model model) {
+    //quite ("/")
+    @GetMapping("/vender")
+    public String mostrarVistaVenta(Model model, HttpSession session) {
         try {
             // Obtener todos los productos disponibles
             Iterable<ProductoEntity> productos = productoService.findAll();
@@ -76,6 +78,12 @@ public class VenderController {
                 model.addAttribute("usuario", auth.getName());
             }
 
+            ClienteEntity cliente = (ClienteEntity) session.getAttribute("clienteReg");
+            if (cliente != null) {
+                System.out.println("diferente nullo");
+                model.addAttribute("cliente", cliente);
+                return "ventaZorro/vender";
+            }
             return "ventaZorro/vender";
         } catch (Exception e) {
             e.printStackTrace();

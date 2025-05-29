@@ -28,6 +28,8 @@ public class SecurityConfig {
     @Autowired
     private CustomSuccessHandler customSuccessHandler;
 
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     //http es objeto
@@ -38,7 +40,9 @@ public class SecurityConfig {
                         authorize
                                 //.requestMatchers("/", "/login", "/registro", "/test-auth", "/usuarios/**", "/css/**", "/js/**", "/images/**", "/iconos/**", "/bootstrap/**", "/clientes/registro").permitAll()
                                 .requestMatchers("/static/**", "/image/**","/css/**", "/js/**", "/images/**", "/iconos/**", "/bootstrap/**").permitAll()
-                                .requestMatchers("/admin", "/admin/**", "/productos", "/productos/**", "/proveedores", "/productos/**", "/usuarios", "/usuarios/**").hasRole("administrador")
+                                .requestMatchers("/admin", "/admin/**", "/productos", "/productos/**", "/proveedor", "/proveedor/**",
+                                        "/usuario", "/usuario/**","/pedido/**","/clientes/editar/{id}", "/clientes/eliminar/{id}", "/ventas/**", "/carrito/**",
+                                        "/ventaZorro/lista-ventasZorro", "/ventaZorro/eliminar/", "/ventaZorro/detalles/").hasRole("administrador")
                                 .anyRequest().authenticated()
                 )
                 .formLogin(form ->
@@ -56,7 +60,9 @@ public class SecurityConfig {
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
                                 .permitAll()
-                );
+                )
+                .exceptionHandling(exception ->
+                        exception.accessDeniedHandler(accessDeniedHandler));
 
         return httpSecurity.build();
     }

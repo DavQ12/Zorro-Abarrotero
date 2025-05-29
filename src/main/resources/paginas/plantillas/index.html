@@ -15,7 +15,7 @@
                 <div class="mb-4">
                     <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero" class="img-fluid" style="max-width: 200px;">
                 </div>
-                <h1 class="display-4 fw-bold mb-3 text-warning">¡Bienvenidos a Caja del Zorro Abarrotero!</h1>
+                <h1 class="display-4 fw-bold mb-3 text-warning">¡Bienvenidos <span th:text="${cliente.nombre}">Nombre Cliente</span> a Caja del Zorro Abarrotero!</h1>
                 <p class="lead mb-4 text-muted">¡Los mejores productos lácteos y jugos frescos a los mejores precios!</p>
                 <div class="mb-4">
                     <i class="fas fa-store-alt fa-3x text-warning mb-3"></i>

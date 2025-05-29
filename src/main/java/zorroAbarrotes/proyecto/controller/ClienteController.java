@@ -1,5 +1,6 @@
 package zorroAbarrotes.proyecto.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,10 +31,12 @@ public class ClienteController {
 
     //validacion de login de los clientes, manda a la ventana donde el cliente puede agregar productos al carrito
     @PostMapping("/clientes/login")
-    public  String loginCliente(@ModelAttribute(value = "cliente") ClienteEntity cliente,RedirectAttributes flash){
+    public  String loginCliente(@ModelAttribute(value = "cliente") ClienteEntity cliente,
+                                RedirectAttributes flash,
+                                HttpSession session) {
         if (cliente.getIdentificador()==null || cliente.getIdentificador().isEmpty()){
             flash.addFlashAttribute("errorMessage", "Por favor ingrese un identificador");
-            return "redirect:/clientes/login";
+            return "redirect:/login";
         }
 
         ClienteEntity clienteReg;
@@ -47,7 +50,8 @@ public class ClienteController {
         }else{
             //valida la contraseña sea la correcta
             if(new BCryptPasswordEncoder().matches(pass, clienteReg.getContrasena())){
-                return "plantillas/index";
+                session.setAttribute("clienteReg", clienteReg);
+                return "redirect:/clientes/inicio";
             }else{
                 flash.addFlashAttribute("errorMessage", "Contraseña incorrecta, vuelve a intentarlo");
                 return "redirect:/login";
@@ -56,8 +60,12 @@ public class ClienteController {
 
     }
 
-    @GetMapping("/clientes/incio")
-    public String mostrarIncio(Model model) {
+    @GetMapping("/clientes/inicio")
+    public String mostrarIncio(Model model, HttpSession session) {
+        System.out.println("mostrarIncio");
+        System.out.println(session.getAttribute("clienteReg"));
+        ClienteEntity cliente = (ClienteEntity) session.getAttribute("clienteReg");
+        model.addAttribute("cliente", cliente);
         return "plantillas/index";
     }
 

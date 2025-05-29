@@ -80,6 +80,11 @@ public class AuthController {
         return "login/login";
     }
 
+    @GetMapping("/denegado/permiso-denegado")
+    public String permisoDenegado() {
+        return "denegado/permiso-denegado";
+    }
+
 
     @GetMapping("/registro")
     public String registroForm(Model model) {
@@ -88,45 +93,45 @@ public class AuthController {
         return "login/login";
     }
 
-    @PostMapping("/registro")
-    public String registro(@ModelAttribute("usuario") UsuarioEntity usuario, RedirectAttributes redirectAttributes) {
-        System.out.println("aqui entra??");
-        try {
-            // Verificar si el usuario ya existe
-            Optional<UsuarioEntity> existingUser = usuarioRepository.findByUsername(usuario.getUsername());
-            if (existingUser.isPresent()) {
-                redirectAttributes.addFlashAttribute("errorMessage", "El nombre de usuario ya está en uso");
-                return "redirect:/login";
-            }
-            
-            // Buscar rol cliente (asumiendo que existe un rol con ID 2 para clientes)
-            RolEntity rolCliente = rolService.findById(2L);
-            if (rolCliente == null) {
-                // Si no existe, obtener todos los roles
-                List<RolEntity> roles = rolService.findAll();
-                if (roles.isEmpty()) {
-                    // Si no hay roles, crear uno por defecto
-                    rolCliente = new RolEntity();
-                    rolCliente.setDescripcion("CLIENTE");
-                    rolCliente = rolService.save(rolCliente);
-                } else {
-                    // Usar el primer rol disponible
-                    rolCliente = roles.get(0);
-                }
-            }
-            
-            usuario.setRol(rolCliente);
-            
-            // Encriptar contraseña
-            usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-            
-            // Guardar usuario
-            usuarioService.save(usuario);
-            
-            return "redirect:/login?registroExitoso";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Error al registrar el usuario: " + e.getMessage());
-            return "redirect:/login";
-        }
-    }
+//    @PostMapping("/registro")
+//    public String registro(@ModelAttribute("usuario") UsuarioEntity usuario, RedirectAttributes redirectAttributes) {
+//        System.out.println("aqui entra??");
+//        try {
+//            // Verificar si el usuario ya existe
+//            Optional<UsuarioEntity> existingUser = usuarioRepository.findByUsername(usuario.getUsername());
+//            if (existingUser.isPresent()) {
+//                redirectAttributes.addFlashAttribute("errorMessage", "El nombre de usuario ya está en uso");
+//                return "redirect:/login";
+//            }
+//
+//            // Buscar rol cliente (asumiendo que existe un rol con ID 2 para clientes)
+//            RolEntity rolCliente = rolService.findById(2L);
+//            if (rolCliente == null) {
+//                // Si no existe, obtener todos los roles
+//                List<RolEntity> roles = rolService.findAll();
+//                if (roles.isEmpty()) {
+//                    // Si no hay roles, crear uno por defecto
+//                    rolCliente = new RolEntity();
+//                    rolCliente.setDescripcion("CLIENTE");
+//                    rolCliente = rolService.save(rolCliente);
+//                } else {
+//                    // Usar el primer rol disponible
+//                    rolCliente = roles.get(0);
+//                }
+//            }
+//
+//            usuario.setRol(rolCliente);
+//
+//            // Encriptar contraseña
+//            usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+//
+//            // Guardar usuario
+//            usuarioService.save(usuario);
+//
+//            return "redirect:/login?registroExitoso";
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Error al registrar el usuario: " + e.getMessage());
+//            return "redirect:/login";
+//        }
+//    }
 }

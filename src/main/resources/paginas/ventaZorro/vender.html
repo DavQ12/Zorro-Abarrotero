@@ -259,9 +259,18 @@
             <div class="info-box">
                 <h3>Cliente</h3>
                 <form id="ventaForm">
-                    <div class="form-group">
-                        <label for="numeroCuenta">Número de cuenta, correo o teléfono</label>
-                        <input type="text" class="form-control" name="numeroCuenta" id="numeroCuenta" placeholder="Ingrese aquí">
+                    <div th:if="${cliente == null}">
+                        <div class="form-group">
+                            <label for="numeroCuenta">Número de cuenta, correo o teléfono</label>
+                            <input type="text" class="form-control" name="numeroCuenta" id="numeroCuenta" placeholder="Ingrese aquí">
+                        </div>
+                    </div>
+
+                    <!-- Si cliente NO es null, mostrar su número de cuenta como texto e input oculto -->
+                    <div th:unless="${cliente == null}">
+                        <label>Correo del cliente</label>
+                        <p th:text="${cliente.correo}">Número de cuenta aquí</p>
+                        <input type="hidden" name="numeroCuenta" id="numeroCuenta" th:value="${cliente.correo}">
                     </div>
                     <div class="form-group">
                         <label for="metodoPago">Método de Pago</label>
@@ -408,7 +417,9 @@
             // Obtener el identificador del cliente
             const numeroCuentaInput = document.getElementById('numeroCuenta');
             const identificadorCliente = numeroCuentaInput ? numeroCuentaInput.value.trim() : '';
-            
+            console.log("testeando")
+            console.log(numeroCuentaInput.value);
+            console.log(identificadorCliente);
             if (carrito.length === 0) {
                 throw new Error('El carrito está vacío');
             }
