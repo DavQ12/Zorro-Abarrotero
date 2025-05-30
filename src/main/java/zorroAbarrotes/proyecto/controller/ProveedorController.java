@@ -47,8 +47,8 @@ public class ProveedorController {
     private UsuarioService usuarioService;
     @Autowired
     private ProductoService productoService;
-    private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro/";
-    //private final String RUTA_IMAGENES = "/home/angelquintero/ImagenesZorro/";
+    //private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro/";
+    private final String RUTA_IMAGENES = "/home/angelquintero/ImagenesZorro/";
     @Autowired
     private PedidoService pedidoService;
 
@@ -190,7 +190,7 @@ public class ProveedorController {
         System.out.println("---------------------------");
 
         //configuracion para mandar el correo
-        String password="qbmvmxqwtafzmkqn";
+        String password="";
         String username = "angelquinterodev12@gmail.com";
         String fechaEnvio = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
         //propiedades del servicio de gmail

@@ -45,7 +45,7 @@ public class ProductoController {
     private ProveedorProductoService proveedorProductoService;
 
     //private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro";
-    private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro";
+    private final String RUTA_IMAGENES = "/home/angelquintero/ImagenesZorro/";
 
     @GetMapping("/image/productos/{nombreArchivo:.+}")
     public ResponseEntity<Resource> obtenerImagen(@PathVariable String nombreArchivo) {
