@@ -233,13 +233,13 @@
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-            
+
             <!-- Show up to 5 page numbers centered around current page -->
             <li th:each="i : ${#numbers.sequence(T(java.lang.Math).max(0, currentPage.get() - 2), T(java.lang.Math).min(totalPages.get() - 1, currentPage.get() + 2))}"
                 class="page-item" th:classappend="${i} == ${currentPage.get()} ? 'active' : ''">
                 <a class="page-link" th:href="@{/ventaZorro/lista-ventasZorro(page=${i}, size=${size}, sortField=${sortField}, sortDir=${sortDir})}" th:text="${i + 1}"></a>
             </li>
-            
+
             <li class="page-item" th:classappend="${currentPage.get() < totalPages.get() - 1} ? '' : 'disabled'">
                 <a class="page-link" th:href="@{/ventaZorro/lista-ventasZorro(page=${currentPage.get() + 1}, size=${size}, sortField=${sortField}, sortDir=${sortDir})}" aria-label="Siguiente">
                     <span aria-hidden="true">&raquo;</span>
@@ -247,52 +247,77 @@
             </li>
         </ul>
     </nav>
-<!-- Modal para detalles de venta -->
-<div class="modal fade" id="modalDetallesVenta" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalles de la Venta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                <p><strong>ID del Carrito:</strong> <span id="idCarrito"></span></p>
-                                <p><strong>Fecha de Creación:</strong> <span id="fechaCarrito"></span></p>
-                                <p><strong>Total del Carrito:</strong> <span id="totalCarrito" class="venta-total"></span></p>
-                            </div>
-                        </div>
+        <!-- Modal para detalles de venta -->
 
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="mb-0">Productos del Carrito</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Imagen</th>
-                                                <th>Producto</th>
-                                                <th>Cantidad</th>
-                                                <th>Precio Unitario</th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="productosTableBody">
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th colspan="3" class="text-end">Total de Productos:</th>
-                                                <th id="productosTotal" class="venta-total"></th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+            <div class="modal fade" id="modalDetallesVenta" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Detalles de la Venta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h5>Información de la Venta</h5>
+                                        <p><strong>ID de Venta:</strong> <span id="idVenta"></span></p>
+                                        <p><strong>Fecha:</strong> <span id="fecha"></span></p>
+                                        <p><strong>Vendedor:</strong> <span id="vendedor"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5>Información del Cliente</h5>
+                                        <p><strong>Nombre:</strong> <span id="cliente"></span></p>
+                                        <p><strong>Método de Pago:</strong> <span id="metodoPago"></span></p>
+                                        <p><strong>Total:</strong> <span id="totalVenta" class="venta-total"></span></p>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Información del Carrito</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>ID del Carrito:</strong> <span id="idCarrito"></span></p>
+                                        <p><strong>Fecha de Creación:</strong> <span id="fechaCarrito"></span></p>
+                                        <p><strong>Total del Carrito:</strong> <span id="totalCarrito" class="venta-total"></span></p>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Productos del Carrito</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Imagen</th>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio Unitario</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody id="productosTableBody">
+                                                </tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <th colspan="3" class="text-end">Total de Productos:</th>
+                                                    <th id="productosTotal" class="venta-total"></th>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+
 
     <!-- Modal para confirmar eliminación -->
     <div class="modal fade" id="modalEliminarVenta" tabindex="-1">

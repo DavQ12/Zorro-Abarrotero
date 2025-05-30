@@ -4,9 +4,10 @@ import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import java.io.File;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,10 +48,13 @@ public class ProveedorController {
     private UsuarioService usuarioService;
     @Autowired
     private ProductoService productoService;
+    //private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro/";
     private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro/";
-    //private final String RUTA_IMAGENES = "/home/angelquintero/ImagenesZorro/";
     @Autowired
     private PedidoService pedidoService;
+    
+    @Autowired
+    private JavaMailSender mailSender;
 
     @GetMapping("alta-proveedor")
     public String altaProveedor(Model model) {
@@ -189,23 +193,15 @@ public class ProveedorController {
         pedidoService.save(pedido);
         System.out.println("---------------------------");
 
-        //configuracion para mandar el correo
-        String password="qbmvmxqwtafzmkqn";
-        String username = "angelquinterodev12@gmail.com";
-        String fechaEnvio = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
-        //propiedades del servicio de gmail
-        Properties p = System.getProperties();
-        p.setProperty("mail.smtps.host", "smtp.gmail.com");
-        p.setProperty("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        p.setProperty("mail.smtps.socketFactory.fallback", "false");
-        p.setProperty("mail.smtp.port", "465");
-        p.setProperty("mail.smtp.socketFactory.port", "465");
-        p.setProperty("mail.smtps.auth", "true");
-        p.setProperty("mail.smtp.ssl.trust", "smtp.gmail.com");
-        p.setProperty("mail.smtps.ssl.trust", "smtp.gmail.com");
-        p.setProperty("mail.smtp.ssl.quitwait", "false");
-        //logica para mandar el correo
-        String cadena="<html><body style='font-family: Arial, sans-serif;'>"
+        try {
+            // Crear el mensaje
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            // Configurar el mensaje
+            helper.setTo(proveedor.getCorreo());
+            helper.setSubject("Detalles del pedido");
+            helper.setText("<html><body style='font-family: Arial, sans-serif;'>"
                 + "<h3>Estimado(a) " + proveedor.getNombre() + ",</h3>"
                 + "<p>De <strong>Zorro Abarrotero</strong>, Sucursal <strong>FES Aragón</strong>, se solicita al proveedor lo siguiente:</p>"
 
@@ -227,35 +223,18 @@ public class ProveedorController {
                 + "</tr>"
                 + "</table>"
 
-                + "<br><p>Enviado el <strong>" + fechaEnvio + "</strong>.</p>"
+                + "<br><p>Enviado el <strong>" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")) + "</strong>.</p>"
                 + "<p>Gracias por su atención.</p>"
-                + "</body></html>";
-        try {
-            Session session = Session.getInstance(p, null);
-            MimeMessage message = new MimeMessage(session);
-            MimeBodyPart texto = new MimeBodyPart();
-            texto.setContent(cadena, "text/html;charset=utf-8");
-            BodyPart adjunto = new MimeBodyPart();
-            String r = RUTA_IMAGENES + producto.getImagen();
-            adjunto.setDataHandler(new DataHandler(new FileDataSource(r)));
-            adjunto.setFileName(producto.getImagen());
-            Multipart multiple = new MimeMultipart();
-            multiple.addBodyPart(texto);
-            multiple.addBodyPart(adjunto);
+                + "</body></html>", true); // true para HTML
 
-            //remitente
-            message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(correo, false));
-            message.setSubject("Detalles del pedido");
-            message.setContent(multiple);
-            message.setSentDate(new Date());
+            // Agregar adjunto
+            String rutaImagen = RUTA_IMAGENES + producto.getImagen();
+            helper.addAttachment(producto.getImagen(), new File(rutaImagen));
 
-            Transport transport = session.getTransport("smtps");
-            transport.connect("smtp.gmail.com", username, password);
-            transport.sendMessage(message, message.getAllRecipients());
-            transport.close();
+            // Enviar el correo
+            mailSender.send(message);
 
-            flash.addFlashAttribute("success", "El correo se mando con exito");
+            flash.addFlashAttribute("success", "Pedido realizado y correo enviado con éxito");
             return "redirect:/proveedor/lista-pedidos";
 
         }catch (Exception e) {
