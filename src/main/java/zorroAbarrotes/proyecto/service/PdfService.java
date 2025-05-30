@@ -34,13 +34,8 @@ public class PdfService {
     private static final BaseColor COLOR_HEADER_BACKGROUND = new BaseColor(255, 224, 178); // Light orange
     private static final float DEFAULT_PADDING = 8f;
     private static final float HEADER_PADDING = 10f;
-<<<<<<< HEAD
     //private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro/";
     private final String RUTA_IMAGENES = "/home/fercw/ImagenesZorro/";
-=======
-
-    private final String RUTA_IMAGENES = "/home/angelquintero/ImagenesZorro/";
->>>>>>> 7adf98501f4523cfe85ca6c9cdcac9db23ad427d
 
     public ByteArrayOutputStream generarPdfVenta(VentaEntity venta) throws DocumentException {
         if (venta.getCarrito() == null ||
@@ -261,7 +256,6 @@ public class PdfService {
             
             try {
                 if (productoCarrito.getProducto().getImagen() != null && !productoCarrito.getProducto().getImagen().isEmpty()) {
-<<<<<<< HEAD
                     String imagePath = RUTA_IMAGENES + productoCarrito.getProducto().getImagen();
                     try {
                         // Intentar cargar la imagen directamente con el nombre completo
@@ -293,13 +287,6 @@ public class PdfService {
                             imageCell.addElement(noImage);
                         }
                     }
-=======
-                    Image productImage = Image.getInstance(RUTA_IMAGENES + productoCarrito.getProducto().getImagen());
-                    // IMÁGENES 
-                    productImage.scaleToFit(70, 70);
-                    productImage.setAlignment(Element.ALIGN_CENTER);
-                    imageCell.addElement(productImage);
->>>>>>> 7adf98501f4523cfe85ca6c9cdcac9db23ad427d
                 } else {
                     Phrase noImage = new Phrase("No disponible", FONT_NORMAL);
                     imageCell.addElement(noImage);
