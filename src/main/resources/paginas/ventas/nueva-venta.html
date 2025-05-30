@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+
+<main class="container mt-4">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .nueva-venta-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .nueva-venta-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nueva-venta-logo img {
+            max-width: 200px;
+            height: auto;
+        }
+        .nueva-venta-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+            font-size: 24px;
+        }
+        .btn-primary {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+            /* Se quita width 100% para que se ajuste con los botones */
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+        }
+        .btn-outline-primary {
+            color: #ff6b00;
+            border-color: #ff6b00;
+        }
+        .btn-outline-primary:hover {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .form-control, .form-select {
+            padding: 12px;
+            margin-bottom: 15px; /* Ajuste ligero */
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            color: #343a40;
+            font-weight: 500;
+            margin-bottom: 5px; /* Espacio entre label e input */
+        }
+        .form-select:focus {
+            border-color: #ff6b00;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        .invalid-feedback {
+            display: block;
+            color: #ff6b00;
+            margin-top: -15px; /* Ajuste para que esté más cerca */
+            margin-bottom: 15px;
+        }
+        /* Estilo para que el botón no ocupe todo el ancho en flex */
+        .d-md-flex .btn-primary {
+            width: auto;
+        }
+
+    </style>
+
+    <div class="nueva-venta-container">
+        <div class="nueva-venta-logo">
+            <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
+        </div>
+        <h1 class="nueva-venta-title" th:text="${venta.id != null} ? 'Editar Venta' : 'Nueva Venta'"></h1>
+
+        <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+        <div th:if="${error != null}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+
+        <form th:action="@{/ventas/guardar}" th:object="${venta}" method="post" class="needs-validation" novalidate>
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label for="cliente" class="form-label">Cliente:</label>
+                <select class="form-select" id="cliente" th:field="*{cliente.id}" required>
+                    <option value="" th:selected="${venta.cliente == null}">Seleccione un cliente</option>
+                    <option th:each="cliente : ${clientes}"
+                            th:value="${cliente.id}"
+                            th:text="${cliente.nombre + ' ' + cliente.apellidoP + (cliente.apellidoM != null ? ' ' + cliente.apellidoM : '')}"
+                            th:selected="${venta.cliente != null and cliente.id == venta.cliente.id}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Por favor seleccione un cliente.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="pago" class="form-label">Método de Pago:</label>
+                <select class="form-select" id="pago" th:field="*{pago.id}" required>
+                    <option value="" th:selected="${venta.pago == null}">Seleccione un método de pago</option>
+                    <option th:each="tipoPago : ${tiposPago}"
+                            th:value="${tipoPago.id}"
+                            th:text="${tipoPago.descripcion}"
+                            th:selected="${venta.pago != null and tipoPago.id == venta.pago.id}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Por favor seleccione un método de pago.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="carrito" class="form-label">Carrito:</label>
+                <select class="form-select" id="carrito" th:field="*{carrito.id}" required>
+                    <option value="" th:selected="${venta.carrito == null}">Seleccione un carrito</option>
+                    <option th:each="carrito : ${carritos}"
+                            th:value="${carrito.id}"
+                            th:text="'Carrito #' + ${carrito.id}"
+                            th:selected="${venta.carrito != null and carrito.id == venta.carrito.id}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Por favor seleccione un carrito.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="usuario" class="form-label">Usuario:</label>
+                <select class="form-select" id="usuario" th:field="*{usuario.id}" required>
+                    <option value="" th:selected="${venta.usuario == null}">Seleccione un usuario</option>
+                    <option th:each="usuario : ${usuarios}"
+                            th:value="${usuario.id}"
+                            th:text="${usuario.usuario}"
+                            th:selected="${venta.usuario != null and usuario.id == venta.usuario.id}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Por favor seleccione un usuario.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha de Venta:</label>
+                <input type="datetime-local" class="form-control" id="fecha"
+                       th:field="*{fechaVenta}" required />
+                <div class="invalid-feedback">Por favor seleccione una fecha de venta.</div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                <a th:href="@{/ventas/lista}" class="btn btn-outline-primary me-md-2">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span th:text="${venta.id != null} ? ' Actualizar' : ' Guardar'"/> </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+
+</body>
+</html>

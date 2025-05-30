@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<style>
+    :root {
+        --orange: #ff6b00;
+        --orange-light: #ff8533;
+        --orange-dark: #e05e00;
+        --red: #dc3545;
+        --red-light: #f5c6cb;
+        --red-dark: #c82333;
+        --border-radius: 10px;
+    }
+
+    .btn-warning {
+        background-color: var(--orange) !important;
+        border-color: var(--orange) !important;
+        color: white !important;
+        transition: all 0.3s ease;
+    }
+
+    .btn-warning:hover {
+        background-color: var(--orange-light) !important;
+        border-color: var(--orange-light) !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-warning:active {
+        background-color: var(--orange-dark) !important;
+        border-color: var(--orange-dark) !important;
+        transform: translateY(0);
+    }
+
+    .table {
+        margin-top: 2rem;
+        border-radius: var(--border-radius);
+    }
+    
+    .table th {
+        background-color: white;
+        color: var(--orange);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border-radius: var(--border-radius);
+    }
+
+    /* Custom orange buttons */
+    .btn-orange {
+        background-color: var(--orange);
+        border-color: var(--orange);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-orange:hover {
+        background-color: var(--orange-light);
+        border-color: var(--orange-light);
+        transform: translateY(-2px);
+    }
+
+    .btn-orange:active {
+        background-color: var(--orange-dark);
+        border-color: var(--orange-dark);
+        transform: translateY(0);
+    }
+
+    .btn-red-danger {
+        background-color: var(--red);
+        color: white;
+        border: 1px solid var(--red);
+        transition: all 0.3s ease;
+    }
+
+    .btn-red-danger:hover {
+        background-color: var(--red-light);
+        transform: translateY(-2px);
+    }
+
+    .btn-red-danger:active {
+        background-color: var(--red-dark);
+        transform: translateY(0);
+    }
+
+    .btn-orange i,
+    .btn-orange-danger i {
+        margin-left: 0.25rem;
+        transition: transform 0.3s ease;
+    }
+
+    .btn-orange:hover i,
+    .btn-orange-danger:hover i {
+        transform: scale(1.1);
+    }
+</style>
+<body>
+    <header th:replace="~{plantillas/plantilla :: header}"></header>
+    
+    <main class="container mt-4">
+        <!-- Error Message -->
+        <div th:if="${errorMessage} != null" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>¡Error!</strong> <span th:text="${errorMessage}">No se puede eliminar el carrito porque está asociado con una venta</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <!-- Success Message -->
+        <div th:if="${successMessage} != null" class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>¡Éxito!</strong> <span th:text="${successMessage}">Carrito eliminado exitosamente</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 style="color: var(--orange)">Lista de Carritos</h1>
+            <div class="btn-group">
+<!--                <a th:href="@{/carrito/nuevo}" class="btn btn-orange">-->
+<!--                    <i class="fas fa-plus-circle"></i> Nuevo Carrito-->
+<!--                </a>-->
+                <a th:href="@{/ventas/lista}" class="btn btn-orange">
+                    <i class="fas fa-arrow-left"></i> Ir a Ventas
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>ID</th>
+                                <th>Total</th>
+                                <th>Fecha</th>
+                                <th>Detalles</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="c : ${carritos}">
+                                <td th:text="${c.id}"></td>
+                                <td>
+                                    <span style="color: #1e7933; font-weight: bold;" 
+                                          th:text="${c.total != null ? '$' + #numbers.formatDecimal(c.total, 1, 2) : '$0.00'}"></span>
+                                </td>
+                                <td th:text="${#temporals.format(c.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <div class="d-flex justify-content-between align-items-center" style="gap: 10px;">
+                                        <button class="btn btn-sm btn-primary"
+                                                th:onclick="|mostrarDetallesCarrito(${c.id})|">
+                                            <i class="fas fa-eye"></i> Ver Detalles
+                                        </button>
+
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" style="gap: 5px;">
+                                        <a th:href="@{/carrito/editar/{id}(id=${c.id})}" class="btn btn-sm btn-orange" style="border-radius: var(--border-radius) !important;">
+                                            <i class="fas fa-pencil-alt"></i> Modificar
+                                        </a>
+                                        <form th:action="@{/carrito/eliminar/{id}(id=${c.id})}" method="post">
+                                            <button type="submit" class="btn btn-sm btn-red-danger" style="border-radius: var(--border-radius) !important;">
+                                                <i class="fas fa-trash-alt"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+<!--        Mostrar los productos del carrito-->
+        <div class="modal fade" id="modalDetallesCarrito" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalles Carrito</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Información del Carrito</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>ID del Carrito:</strong> <span id="idCarrito"></span></p>
+                                    <p><strong>Fecha de Creación:</strong> <span id="fechaCarrito"></span></p>
+                                    <p><strong>Total del Carrito:</strong> <span id="totalCarrito" class="venta-total"></span></p>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Productos del Carrito</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>Imagen</th>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Precio Unitario</th>
+                                                <th>Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="productosTableBody">
+                                            </tbody>
+                                            <tfoot>
+                                            <tr>
+                                                <th colspan="3" class="text-end">Total de Productos:</th>
+                                                <th id="productosTotal" class="venta-total"></th>
+                                            </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script th:inline="javascript">
+        let ventaSeleccionada = null;
+        function mostrarDetallesCarrito(carritoId) {
+            fetch(`/carrito/detalles/${carritoId}`)
+                .then(response => response.json())
+                .then(data =>{
+                    //mostrar info del carrito
+                    document.getElementById('idCarrito').textContent = data.idCarrito;
+                    document.getElementById('fechaCarrito').textContent = data.fecha;
+                    document.getElementById('totalCarrito').textContent = `$${data.total.toFixed(2)}`;
+
+                    // Limpiar y llenar la tabla de productos
+                    const productosTableBody = document.getElementById('productosTableBody');
+                    productosTableBody.innerHTML = '';
+
+                    let productosTotal = 0;
+                    data.productos.forEach(producto => {
+                        productosTotal += producto.total;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><img src="${producto.imagen}" alt="Imagen" width="50"></td>
+                            <td>${producto.nombre}</td>
+                            <td>${producto.cantidad}</td>
+                            <td>$${producto.precioUnitario.toFixed(2)}</td>
+                            <td class="venta-total">$${producto.total.toFixed(2)}</td>
+                        `;
+                        productosTableBody.appendChild(row);
+                    });
+                    document.getElementById('productosTotal').textContent = `$${productosTotal.toFixed(2)}`;
+
+                    // Mostrar modal con la información
+                    new bootstrap.Modal(document.getElementById('modalDetallesCarrito')).show();
+                })
+                .catch(error => {
+                    console.error('Error al cargar detalles del carrito:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudieron cargar los detalles del carrito'
+                    });
+                });
+
+        }
+
+
+    </script>
+
+    
+  
+    <footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

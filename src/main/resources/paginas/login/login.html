@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Zorro Abarrotero</title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/iconos/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .login-logo {
+            text-align: center;
+        }
+        .login-logo img {
+            max-width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+        :root {
+            --orange: #ff6b00;
+            --orange-light: #ff8533;
+            --orange-dark: #e05e00;
+            --border-radius: 10px;
+        }
+
+        .btn-warning {
+            background-color: var(--orange);
+            border-color: var(--orange);
+            color: white;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: var(--orange-light);
+            border-color: var(--orange-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning:active {
+            background-color: var(--orange-dark);
+            border-color: var(--orange-dark);
+            transform: translateY(0);
+        }
+
+        .btn-warning i {
+            margin-left: 0.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-warning:hover i {
+            transform: scale(1.1);
+        }
+
+        .btn-primary {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+        }
+        .form-control {
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-logo">
+                <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
+            </div>
+            <h2 class="login-title">Iniciar Sesión</h2>
+            
+            <div th:if="${param.error}" class="alert alert-danger">
+                Usuario o contraseña incorrectos.
+            </div>
+            
+            <div th:if="${param.logout}" class="alert alert-success">
+                Has cerrado sesión correctamente.
+            </div>
+            
+            <div th:if="${param.registroExitoso}" class="alert alert-success">
+                ¡Registro exitoso! Ahora puedes iniciar sesión.
+            </div>
+            
+            <form th:action="@{/}" method="post">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" class="form-control" required autofocus placeholder="Ingrese su usuario o correo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary mb-3">Iniciar Sesión</button>
+            </form>
+
+        </div>
+    </div>
+    
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="color: #ff6b00">Listado de Usuarios</h1>
+        <a href="/usuario/alta-usuario" class="btn btn-warning">
+            <i class="fas fa-user-plus"></i> Nuevo Usuario
+        </a>
+    </div>
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <style>
+                :root {
+                    --orange: #ff4d00;
+                    --orange-light: #ff8533;
+                    --orange-dark: #e05e00;
+                    --red: #dc3545;
+                    --red-light: #f5c6cb;
+                    --red-dark: #c82333;
+                    --border-radius: 10px;
+                }
+
+                .btn-warning {
+                    background-color: var(--orange) !important;
+                    border-color: var(--orange) !important;
+                    color: white !important;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-warning:hover {
+                    background-color: var(--orange-light) !important;
+                    border-color: var(--orange-light) !important;
+                    transform: translateY(-2px);
+                }
+
+                .btn-warning:active {
+                    background-color: var(--orange-dark) !important;
+                    border-color: var(--orange-dark) !important;
+                    transform: translateY(0);
+                }
+
+                .table {
+                    margin-top: 2rem;
+                    border-radius: var(--border-radius);
+                }
+                
+                .table th {
+                    background-color: white;
+                    color: var(--orange);
+                    border-radius: var(--border-radius) var(--border-radius) 0 0;
+                }
+                
+                .table td {
+                    vertical-align: middle;
+                }
+                
+                .btn-sm {
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.875rem;
+                    border-radius: var(--border-radius);
+                }
+
+                /* Custom orange buttons */
+                .btn-orange {
+                    background-color: var(--orange);
+                    border-color: var(--orange);
+                    color: white;
+                    transition: all 0.3s ease;
+                }
+
+                .btn-orange:hover {
+                    background-color: var(--orange-light);
+                    border-color: var(--orange-light);
+                    transform: translateY(-2px);
+                }
+
+                .btn-orange:active {
+                    background-color: var(--orange-dark);
+                    border-color: var(--orange-dark);
+                    transform: translateY(0);
+                }
+
+                .btn-red-danger {
+                    background-color: var(--red);
+                    color: white;
+                    border: 1px solid var(--red);
+                    transition: all 0.3s ease;
+                }
+
+                .btn-red-danger:hover {
+                    background-color: var(--red-light);
+                    transform: translateY(-2px);
+                }
+
+                .btn-red-danger:active {
+                    background-color: var(--red-dark);
+                    transform: translateY(0);
+                }
+
+                .btn-orange i,
+                .btn-orange-danger i {
+                    margin-left: 0.25rem;
+                    transition: transform 0.3s ease;
+                }
+
+                .btn-orange:hover i,
+                .btn-orange-danger:hover i {
+                    transform: scale(1.1);
+                }
+            </style>
+    
+    <div class="alert alert-info" th:if="${lista.isEmpty()}">
+        No hay usuarios registrados en el sistema.
+    </div>
+
+    <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+        <tbody>
+        <tr th:each="user: ${lista}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.correo}"></td>
+            <td th:text="${user.rol.descripcion}"></td>
+            <td>
+                <a th:href="@{/usuario/editar/{id} (id=${user.id})}"
+                   class="btn btn-orange btn-sm">Modificar <i class="fas fa-pen-nib"
+                                                        aria-hidden="true"></i> </a>
+                <a th:href="@{/usuario/eliminar/{id} (id=${user.id})}"
+                   class="btn btn-red-danger btn-sm">Eliminar <i class="fas fa-trash-alt"
+                                                      aria-hidden="true"></i> </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

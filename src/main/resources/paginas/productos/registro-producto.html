@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Producto - Zorro Abarrotero</title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/iconos/bootstrap-icons.css">
+    <header th:replace="~{plantillas/plantilla :: header}"></header>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .registro-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .registro-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .registro-logo img {
+            max-width: 150px;
+        }
+        .registro-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+        }
+        .btn-outline-primary {
+            color: #ff6b00;
+            border-color: #ff6b00;
+        }
+        .btn-outline-primary:hover {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .form-control {
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="registro-container">
+            <div class="registro-logo">
+                <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
+            </div>
+            
+            <h2 class="registro-title" th:text="${producto.id} ? 'Editar Producto' : 'Nuevo Producto'"></h2>
+            
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form th:action="@{/productos/guardar}" method="post" th:object="${producto}" enctype="multipart/form-data">
+                <div th:if="${#fields.hasErrors('*')}" class='alert alert-danger' role="alert">
+                    Verifique los siguientes inconvenientes
+                    <ul>
+                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <div th:if="${success}" class="alert alert-success">
+                    <span th:text="${success}"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="marca">Marca</label>
+                            <input type="text" class="form-control" id="marca" th:field="*{marca}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="precio">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="precio" th:field="*{precio}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="categoria">Categoría</label>
+                            <select class="form-control" id="categoria" th:field="*{categoria}" required>
+                                <option value="">Seleccione una categoría</option>
+                                <option th:each="cat : ${categorias}"
+                                        th:value="${cat.id}"
+                                        th:text="${cat.descripcion}"
+                                        th:selected="${cat.id == producto.categoria?.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="stockMinimo">Stock Mínimo</label>
+                            <input type="number" class="form-control" id="stockMinimo" th:field="*{stockMinimo}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="stockActual">Stock Actual</label>
+                            <input type="number" class="form-control" id="stockActual" th:field="*{stockActual}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="imagen">Imagen del Producto</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="imagen" name="archivo" accept="image/*">
+                    </div>
+                    <div class="mt-2">
+                        <div th:if="${producto.imagen != null && producto.imagen != ''}">
+                            <img th:src="@{/image/productos/{nombreArchivo}(nombreArchivo=${producto.imagen})}"
+                                 alt="Imagen actual"
+                                 class="img-thumbnail"
+                                 style="max-width: 200px;">
+                        </div>
+                        <div th:if="${producto.imagen == null || producto.imagen == ''}" class="text-muted">
+                            No hay imagen disponible
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a th:href="@{/productos/lista}" class="btn btn-outline-primary me-md-2" style="width: 100%; padding: 10px; font-weight: bold;">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; font-weight: bold;">
+                        <i class="bi bi-save"></i>
+                        <span th:text="${producto.id} ? 'Actualizar' : 'Guardar'"></span>
+                    </button>
+                </div>
+
+                <input type="hidden" th:field="*{id}"/>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>

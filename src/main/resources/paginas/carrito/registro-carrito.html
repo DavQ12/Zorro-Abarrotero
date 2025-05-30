@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+<main class="login-container">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-logo img {
+            max-width: 200px;
+            height: auto;
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #343a40;
+            font-size: 24px;
+        }
+        .btn-warning {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .btn-warning:hover {
+            background-color: #e05e00;
+            border-color: #e05e00;
+        }
+        .btn-outline-warning {
+            color: #ff6b00;
+            border-color: #ff6b00;
+        }
+        .btn-outline-warning:hover {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .form-control {
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            color: #343a40;
+            font-weight: 500;
+        }
+        .form-select {
+            padding: 12px;
+            border-color: #ddd;
+        }
+        .form-select:focus {
+            border-color: #ff6b00;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        .invalid-feedback {
+            color: #ff6b00;
+        }
+        .form-select:invalid {
+            border-color: #ff6b00;
+        }
+        .form-select:focus:invalid {
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.25);
+        }
+        .invalid-feedback {
+            display: block;
+            color: #ff6b00;
+        }
+    </style>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="login-logo">
+                <img th:src="@{/image/zorro1.png}" alt="Zorro Abarrotero">
+            </div>
+            <h1 class="login-title">Registro de Carrito</h1>
+            
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <span th:text="${errorMessage}"></span>
+            </div>
+            
+            <form th:action="@{/carrito/guardar}" method="post" th:object="${carrito}" class="needs-validation" novalidate>
+                <div class="mb-3 row">
+                    <label for="total" class="col-sm-3 col-form-label text-end">Total:</label>
+                    <div class="col-sm-9">
+                        <input type="number" id="total" th:field="*{total}" class="form-control" step="0.01" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un total válido.
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a th:href="@{/carrito/lista}" class="btn btn-outline-warning me-md-2">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{plantillas/plantilla :: head}"></head>
+<body>
+<header th:replace="~{plantillas/plantilla :: header}"></header>
+
+<main class="container mt-4">
+    <!-- Modal para stock bajo -->
+    <div class="modal fade" id="modalStockBajo" tabindex="-1" role="dialog" aria-labelledby="modalStockBajoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="modalStockBajoLabel">Alerta de Stock Bajo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="productosBajoStock"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de carga -->
+    <div id="loadingModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-orange" role="status" style="width: 50px; height: 50px;">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-3">Generando PDF y enviando correo...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estilos generales -->
+    <style>
+        .text-orange {
+            color: #f57c00;
+        }
+        body {
+            background-color: #fff3e0;
+        }
+        .venta-container {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 1fr;
+            gap: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        @media (max-width: 992px) {
+            .venta-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .info-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .info-box {
+            padding: 20px;
+            background-color: #ffe0b2;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info-box h3 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .producto-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .producto-card {
+            border: 1px solid #ffb74d;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background-color: #fff;
+        }
+        .producto-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .producto-card img {
+            max-width: 90%;
+            height: auto;
+            margin-bottom: 8px;
+        }
+        .producto-card h4 {
+            color: #e65100;
+            margin-top: 8px;
+            margin-bottom: 5px;
+            font-size: 1em;
+        }
+        .producto-card p {
+            color: #757575;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .carrito-detalle {
+            padding: 20px;
+            background-color: #ffe0b2;
+            border-radius: 10px;
+        }
+        .carrito-detalle h3 {
+            color: #e65100;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .total-container {
+            background-color: #f57c00;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1em;
+        }
+        .total-container h3, .total-container span {
+            color: white;
+        }
+        .btn-aceptar {
+            background-color: #f57c00;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1em;
+            margin-top: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+        .btn-aceptar:hover {
+            background-color: #e65100;
+        }
+        .btn-aceptar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .btn-agregar {
+            background-color: #ff9800;
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9em;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-agregar:hover {
+            background-color: #f57c00;
+        }
+        .btn-agregar:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #e65100;
+            font-size: 0.95em;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ffb74d;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.9em;
+        }
+        .carrito-item {
+            background-color: #fff;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            font-size: 0.9em;
+        }
+        .carrito-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .carrito-item-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 6px;
+        }
+        .carrito-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+        .quantity-btn {
+            background: none;
+            border: 1px solid #ff9800;
+            color: #ff9800;
+            padding: 4px 8px;
+            margin: 0 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            line-height: 1;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .quantity-btn:hover {
+            background-color: #ff9800;
+            color: white;
+        }
+        .btn-eliminar {
+            background-color: #ef5350;
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s ease;
+        }
+        .btn-eliminar:hover {
+            background-color: #e53935;
+        }
+        .stock-alert {
+            border-left: 4px solid #f57c00;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #fff3e0;
+        }
+        .stock-alert h6 {
+            color: #e65100;
+            margin: 0;
+        }
+        .stock-alert p {
+            margin: 5px 0;
+            color: #757575;
+        }
+        .venta-container > div:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .venta-container > div:nth-child(2) { grid-column: 2; grid-row: 1; }
+        .venta-container > div:nth-child(3) { grid-column: 3; grid-row: 1; }
+    </style>
+
+    <div class="venta-container">
+        <div class="producto-lista">
+            <div class="producto-card" th:each="producto : ${productos}" th:attr="data-producto-id=${producto.id}">
+                <img th:src="@{/image/productos/{nombreArchivo}(nombreArchivo=${producto.imagen})}" alt="Producto" style="max-width: 90%; height: auto;">
+                <h4 th:text="${producto.nombre}">Nombre del Producto</h4>
+                <p th:text="'$' + ${producto.precio}">$0.00</p>
+                <button class="btn-agregar" th:onclick="'agregarAlCarrito(' + ${producto.id} + ')'">Añadir</button>
+            </div>
+        </div>
+
+        <div>
+            <div class="info-box">
+                <h3>Cliente</h3>
+                <form id="ventaForm">
+                    <div th:if="${cliente == null}">
+                        <div class="form-group">
+                            <label for="numeroCuenta">Número de cuenta, correo o teléfono</label>
+                            <input type="text" class="form-control" name="numeroCuenta" id="numeroCuenta" placeholder="Ingrese aquí">
+                        </div>
+                    </div>
+
+                    <!-- Si cliente NO es null, mostrar su número de cuenta como texto e input oculto -->
+                    <div th:unless="${cliente == null}">
+                        <label>Correo del cliente</label>
+                        <p th:text="${cliente.correo}">Número de cuenta aquí</p>
+                        <input type="hidden" name="numeroCuenta" id="numeroCuenta" th:value="${cliente.correo}">
+                    </div>
+                    <div class="form-group">
+                        <label for="metodoPago">Método de Pago</label>
+                        <select class="form-control" name="metodoPago" id="metodoPago">
+                            <option value="">Seleccione un método</option>
+                            <option value="1">Efectivo</option>
+                            <option value="5">Mercado Pago</option>
+                            <option value="2">Tarjeta de Crédito</option>
+                            <option value="3">Tarjeta de Débito</option>
+                            <option value="4">Transferencia Bancaria</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="info-box">
+                <h3>Detalle de la Venta</h3>
+                <div>
+                    <strong>Vendedor:</strong> <span th:text="${usuario}">Usuario</span>
+                </div>
+                <div>
+                    <strong>Fecha:</strong> <span id="fecha-venta">Cargando...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="carrito-detalle">
+            <h3>Detalle del Carrito</h3>
+            <div id="carrito-contenido">
+            </div>
+            <div class="total-container">
+                <h3>Total: <span id="total-venta">$0.00</span></h3>
+            </div>
+            <button type="button" class="btn-aceptar" onclick="confirmarVenta()">Confirmar Venta</button>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{plantillas/plantilla :: footer}"></footer>
+
+<script th:inline="javascript">
+    // Verificar productos con stock bajo al cargar la página
+    const productosBajoStock = /*[[${productosBajoStock}]]*/ [];
+    if (productosBajoStock.length > 0) {
+        const modalBody = document.getElementById('productosBajoStock');
+        productosBajoStock.forEach(producto => {
+            const stockAlert = document.createElement('div');
+            stockAlert.className = 'stock-alert';
+            stockAlert.innerHTML = `
+                <h6>${producto.nombre}</h6>
+                <p>Stock actual: ${producto.stockActual}</p>
+                <p>Stock mínimo: ${producto.stockMinimo}</p>
+            `;
+            modalBody.appendChild(stockAlert);
+        });
+        
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('modalStockBajo'));
+        modal.show();
+    }
+    
+    let carrito = [];
+
+    function agregarAlCarrito(productId) {
+        console.log('Agregar al carrito llamado con ID:', productId);
+        const productoCard = document.querySelector(`.producto-card[data-producto-id="${productId}"]`);
+        if (!productoCard) {
+            console.error('No se encontró el producto con ID:', productId);
+            return;
+        }
+
+        const precioTexto = productoCard.querySelector('p').textContent;
+        const precio = parseFloat(precioTexto.replace(/[^\d.-]+/g, ''));
+
+        const producto = {
+            id: productId,
+            nombre: productoCard.querySelector('h4').textContent,
+            precio: precio,
+            cantidad: 1
+        };
+
+        const existingProduct = carrito.find(item => item.id == productId);
+        if (existingProduct) {
+            existingProduct.cantidad++;
+        } else {
+            carrito.push(producto);
+        }
+
+        actualizarCarrito();
+        mostrarCarrito();
+    }
+
+    function mostrarCarrito() {
+        const carritoContenido = document.getElementById('carrito-contenido');
+        carritoContenido.innerHTML = '';
+
+        carrito.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'carrito-item';
+            itemElement.innerHTML = `
+                <div class="carrito-item-info">
+                    <h5>${item.nombre}</h5>
+                    <div class="carrito-item-details">
+                        <p>Total: $${(item.precio * item.cantidad).toFixed(2)}</p>
+                        <div class="carrito-item-quantity">
+                            <button onclick="cambiarCantidad(${item.id}, -1)" class="quantity-btn">-</button>
+                            <span>${item.cantidad}</span>
+                            <button onclick="cambiarCantidad(${item.id}, 1)" class="quantity-btn">+</button>
+                        </div>
+                        <button onclick="eliminarDelCarrito(${item.id})" class="btn-eliminar">Eliminar</button>
+                    </div>
+                </div>
+            `;
+            carritoContenido.appendChild(itemElement);
+        });
+        actualizarCarrito();
+    }
+
+    function cambiarCantidad(productId, cambio) {
+        const item = carrito.find(item => item.id == productId);
+        if (item) {
+            item.cantidad += cambio;
+            if (item.cantidad < 1) {
+                carrito = carrito.filter(i => i.id != productId);
+            }
+            mostrarCarrito();
+        }
+    }
+
+    function eliminarDelCarrito(productId) {
+        carrito = carrito.filter(item => item.id != productId);
+        mostrarCarrito();
+    }
+
+    function actualizarCarrito() {
+        const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+        document.getElementById('total-venta').textContent = `$${total.toFixed(2)}`;
+    }
+
+    function actualizarFecha() {
+        const fechaActual = new Date();
+        const opciones = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        document.getElementById('fecha-venta').textContent = fechaActual.toLocaleString('es-ES', opciones);
+    }
+
+    async function confirmarVenta(forceContinueWithoutClient = false) {
+        // Deshabilitar botones
+        const aceptarBtn = document.querySelector('.btn-aceptar');
+        if (aceptarBtn) {
+            aceptarBtn.disabled = true;
+        }
+        const agregarBtns = document.querySelectorAll('.btn-agregar');
+        agregarBtns.forEach(btn => btn.disabled = true);
+
+        try {
+            // Obtener el identificador del cliente
+            const numeroCuentaInput = document.getElementById('numeroCuenta');
+            const identificadorCliente = numeroCuentaInput ? numeroCuentaInput.value.trim() : '';
+            console.log("testeando");
+            console.log(numeroCuentaInput.value);
+            console.log(identificadorCliente);
+            
+            if (carrito.length === 0) {
+                throw new Error('El carrito está vacío');
+            }
+
+            const metodoPago = document.getElementById('metodoPago').value;
+
+            // Validar que se haya seleccionado un método de pago
+            if (!metodoPago) {
+                throw new Error('Debe seleccionar un método de pago');
+            }
+
+            // --- Lógica de Validación de Cliente ANTES de mostrar modal ---
+            if (identificadorCliente && !forceContinueWithoutClient) {
+                try {
+                    const response = await fetch(`/ventaZorro/validar-cliente?identificador=${encodeURIComponent(identificadorCliente)}`);
+                    if (!response.ok) {
+                        throw new Error('Error en la validación del cliente');
+                    }
+                    const data = await response.json();
+
+                    if (!data.existe) {
+                        // Cliente no encontrado, mostrar modal con opciones
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Cliente no encontrado',
+                                html: `
+                                    <div style="margin-bottom: 20px;">
+                                        <p style="color: #e65100; font-size: 1.1em;">
+                                            El cliente con identificador <strong>${identificadorCliente}</strong> no está registrado.
+                                        </p>
+                                    </div>
+                                    <div style="margin-top: 20px;">
+                                        <a href="/clientes/nuevo" class="swal2-styled swal2-confirm" 
+                                           style="margin-right: 10px; text-decoration: none; background-color: #f57c00; color: white; padding: 10px 20px; border-radius: 4px;">
+                                           <i class="fas fa-user-plus"></i> Registrar Cliente
+                                        </a>
+                                        <button class="swal2-styled swal2-cancel" 
+                                                onclick="
+                                                    Swal.close();
+                                                    confirmarVenta(true);
+                                                "
+                                                style="background-color: #ff4c26; color: white; padding: 10px 20px; border-radius: 4px;">
+                                           <i class="fas fa-arrow-right"></i> Continuar sin cliente
+                                        </button>
+                                    </div>
+                                `,
+                                showConfirmButton: false,
+                                showCancelButton: false
+                            });
+                        } else {
+                            const confirmar = confirm(`El cliente con identificador ${identificadorCliente} no está registrado. ¿Desea continuar sin cliente?`);
+                            if (confirmar) {
+                                confirmarVenta(true);
+                            }
+                        }
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error al validar cliente:', error);
+                    throw new Error('Error al validar el cliente');
+                }
+            }
+
+            // Mostrar modal de carga
+            let loadingModal = null;
+            if (identificadorCliente || forceContinueWithoutClient) {
+                const loadingModalElement = document.getElementById('loadingModal');
+                if (loadingModalElement && typeof bootstrap !== 'undefined') {
+                    loadingModal = new bootstrap.Modal(loadingModalElement);
+                    loadingModal.show();
+                }
+            }
+
+            // Preparar los datos del carrito
+            const productosParaEnviar = carrito.map(item => ({
+                idProducto: parseInt(item.id),
+                cantidad: Math.floor(item.cantidad),
+                precioUnitario: parseFloat(item.precio)
+            }));
+
+            const totalVenta = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+
+            const ventaData = {
+                numeroCuenta: identificadorCliente,
+                metodoPago: parseInt(metodoPago),
+                productos: productosParaEnviar,
+                totalVenta: parseFloat(totalVenta.toFixed(2))
+            };
+
+            try {
+                const response = await fetch('/ventaZorro/guardar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(ventaData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Ocultar modal de carga
+                    if (loadingModal) {
+                        loadingModal.hide();
+                    }
+
+                    const mensaje = data.envioPdf ? 
+                        'La venta se ha registrado correctamente y se ha enviado el PDF al correo del cliente.' :
+                        'La venta se ha registrado correctamente.';
+                    
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Venta Registrada',
+                            text: mensaje
+                        }).then(() => {
+                            limpiarFormulario();
+                            redirigir();
+                        });
+                    } else {
+                        alert(mensaje);
+                        limpiarFormulario();
+                        redirigir();
+                    }
+                } else {
+                    throw new Error(data.message || 'Hubo un error al registrar la venta.');
+                }
+            } catch (error) {
+                if (loadingModal) {
+                    loadingModal.hide();
+                }
+                throw error;
+            }
+        } catch (error) {
+            // Ocultar modal de carga si existe
+            const loadingModalElement = document.getElementById('loadingModal');
+            if (loadingModalElement && typeof bootstrap !== 'undefined') {
+                const modalInstance = bootstrap.Modal.getInstance(loadingModalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+
+            // Rehabilitar botones
+            if (aceptarBtn) {
+                aceptarBtn.disabled = false;
+            }
+            agregarBtns.forEach(btn => btn.disabled = false);
+
+            // Mostrar mensaje de error apropiado
+            let mensajeError = '';
+            if (error.message === 'El carrito está vacío') {
+                mensajeError = 'No hay productos en el carrito.';
+            } else if (error.message === 'Debe seleccionar un método de pago') {
+                mensajeError = 'Debe seleccionar un método de pago';
+            } else {
+                mensajeError = error.message || 'Hubo un error al comunicarse con el servidor.';
+            }
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: error.message === 'El carrito está vacío' || error.message === 'Debe seleccionar un método de pago' ? 'warning' : 'error',
+                    title: 'Error',
+                    text: mensajeError
+                });
+            } else {
+                alert(mensajeError);
+            }
+
+            console.error('Error al enviar la venta:', error);
+        }
+    }
+
+    function limpiarFormulario() {
+        carrito = [];
+        mostrarCarrito();
+        actualizarCarrito();
+        const numeroCuentaInput = document.getElementById('numeroCuenta');
+        if (numeroCuentaInput && numeroCuentaInput.type !== 'hidden') {
+            numeroCuentaInput.value = '';
+        }
+        document.getElementById('metodoPago').value = '';
+    }
+
+    function redirigir() {
+        const esClienteNulo = /*[[${cliente == null}]]*/ true;
+        if (esClienteNulo) {
+            window.location.href = '/ventaZorro/lista-ventasZorro';
+        } else {
+            window.location.href = '/clientes/inicio';
+        }
+    }
+
+    // Actualizar la fecha cada segundo al cargar la página
+    actualizarFecha();
+    setInterval(actualizarFecha, 1000);
+</script>
+</body>
+</html>
